@@ -25,39 +25,63 @@ public class EventRecord {
     @Column(nullable = false)
     private Double basePrice;
 
-    private Boolean active = true;
-
     private LocalDateTime createdAt;
 
-    @PrePersist
-    public void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        if (active == null) active = true;
-    }
+    private Boolean active = true;
 
-    @OneToMany(mappedBy = "eventId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SeatInventoryRecord> inventories;
+    @OneToMany(mappedBy = "eventRecord", cascade = CascadeType.ALL)
+    private List<SeatInventoryRecord> seatInventoryRecords;
 
-    @OneToMany(mappedBy = "eventId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DynamicPriceRecord> priceRecords;
+    @OneToMany(mappedBy = "eventRecord", cascade = CascadeType.ALL)
+    private List<DynamicPriceRecord> dynamicPriceRecords;
 
-    @OneToMany(mappedBy = "eventId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PriceAdjustmentLog> adjustmentLogs;
+    @OneToMany(mappedBy = "eventRecord", cascade = CascadeType.ALL)
+    private List<PriceAdjustmentLog> priceAdjustmentLogs;
 
     public EventRecord() {}
 
-    public EventRecord(Long id, String eventCode, String eventName, String venue,
-                       LocalDate eventDate, Double basePrice, Boolean active,
-                       LocalDateTime createdAt) {
+    public EventRecord(Long id, String eventCode, String eventName, String venue, LocalDate eventDate,
+                       Double basePrice, LocalDateTime createdAt, Boolean active) {
         this.id = id;
         this.eventCode = eventCode;
         this.eventName = eventName;
         this.venue = venue;
         this.eventDate = eventDate;
         this.basePrice = basePrice;
-        this.active = active;
         this.createdAt = createdAt;
+        this.active = active;
     }
 
-    // getters + setters
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (active == null) active = true;
+    }
+
+    // Getters + Setters
+    // ------------------------------------------
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getEventCode() { return eventCode; }
+    public void setEventCode(String eventCode) { this.eventCode = eventCode; }
+
+    public String getEventName() { return eventName; }
+    public void setEventName(String eventName) { this.eventName = eventName; }
+
+    public String getVenue() { return venue; }
+    public void setVenue(String venue) { this.venue = venue; }
+
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
+
+    public Double getBasePrice() { return basePrice; }
+    public void setBasePrice(Double basePrice) { this.basePrice = basePrice; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 }

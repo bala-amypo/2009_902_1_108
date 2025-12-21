@@ -19,10 +19,9 @@ public class DynamicPriceRecord {
 
     private LocalDateTime computedAt;
 
-    @PrePersist
-    public void onCreate() {
-        this.computedAt = LocalDateTime.now();
-    }
+    @ManyToOne
+    @JoinColumn(name = "event_id", insertable = false, updatable = false)
+    private EventRecord eventRecord;
 
     public DynamicPriceRecord() {}
 
@@ -35,5 +34,24 @@ public class DynamicPriceRecord {
         this.computedAt = computedAt;
     }
 
-    // getters + setters
+    @PrePersist
+    public void setTimestamp() {
+        computedAt = LocalDateTime.now();
+    }
+
+    // getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
+
+    public Double getComputedPrice() { return computedPrice; }
+    public void setComputedPrice(Double computedPrice) { this.computedPrice = computedPrice; }
+
+    public String getAppliedRuleCodes() { return appliedRuleCodes; }
+    public void setAppliedRuleCodes(String appliedRuleCodes) { this.appliedRuleCodes = appliedRuleCodes; }
+
+    public LocalDateTime getComputedAt() { return computedAt; }
+    public void setComputedAt(LocalDateTime computedAt) { this.computedAt = computedAt; }
 }
