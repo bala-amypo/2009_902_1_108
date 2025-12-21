@@ -10,27 +10,22 @@ public class PricingRule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String ruleCode;
 
     private String description;
-
     private Integer minRemainingSeats;
-
     private Integer maxRemainingSeats;
-
     private Integer daysBeforeEvent;
 
+    @Column(nullable = false)
     private Double priceMultiplier;
 
-    private Boolean active;
+    private Boolean active = true;
 
     public PricingRule() {}
 
-    public PricingRule(Long id, String ruleCode, String description, Integer minRemainingSeats,
-                       Integer maxRemainingSeats, Integer daysBeforeEvent,
-                       Double priceMultiplier, Boolean active) {
-        this.id = id;
+    public PricingRule(String ruleCode, String description, Integer minRemainingSeats, Integer maxRemainingSeats, Integer daysBeforeEvent, Double priceMultiplier, Boolean active) {
         this.ruleCode = ruleCode;
         this.description = description;
         this.minRemainingSeats = minRemainingSeats;
@@ -40,7 +35,7 @@ public class PricingRule {
         this.active = active;
     }
 
-    // getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

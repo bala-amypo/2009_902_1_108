@@ -10,26 +10,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String fullName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    private String password;
+    @Column(nullable = false)
+    private String password; // BCrypt hashed
 
-    private String role;
+    @Column(nullable = false)
+    private String role; // ADMIN, EVENT_MANAGER, PRICING_ANALYST
 
     public User() {}
 
-    public User(Long id, String fullName, String email, String password, String role) {
-        this.id = id;
+    public User(String fullName, String email, String password, String role) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    // getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

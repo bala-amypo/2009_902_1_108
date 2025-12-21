@@ -11,40 +11,36 @@ public class DynamicPriceRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private EventRecord event;
 
+    @Column(nullable = false)
     private Double computedPrice;
 
-    private String appliedRuleCodes;
+    private String appliedRuleCodes; // comma-separated codes
 
     private LocalDateTime computedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", insertable = false, updatable = false)
-    private EventRecord eventRecord;
-
     public DynamicPriceRecord() {}
 
-    public DynamicPriceRecord(Long id, Long eventId, Double computedPrice,
-                              String appliedRuleCodes, LocalDateTime computedAt) {
-        this.id = id;
-        this.eventId = eventId;
+    public DynamicPriceRecord(EventRecord event, Double computedPrice, String appliedRuleCodes) {
+        this.event = event;
         this.computedPrice = computedPrice;
         this.appliedRuleCodes = appliedRuleCodes;
-        this.computedAt = computedAt;
     }
 
     @PrePersist
-    public void setTimestamp() {
-        computedAt = LocalDateTime.now();
+    public void prePersist() {
+        this.computedAt = LocalDateTime.now();
     }
 
-    // getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
+    public EventRecord getEvent() { return event; }
+    public void setEvent(EventRecord event) { this.event = event; }
 
     public Double getComputedPrice() { return computedPrice; }
     public void setComputedPrice(Double computedPrice) { this.computedPrice = computedPrice; }

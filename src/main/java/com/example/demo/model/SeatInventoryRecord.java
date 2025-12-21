@@ -11,41 +11,35 @@ public class SeatInventoryRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private EventRecord event;
 
     private Integer totalSeats;
-
     private Integer remainingSeats;
 
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", insertable = false, updatable = false)
-    private EventRecord eventRecord;
-
     public SeatInventoryRecord() {}
 
-    public SeatInventoryRecord(Long id, Long eventId, Integer totalSeats, Integer remainingSeats,
-                               LocalDateTime updatedAt) {
-        this.id = id;
-        this.eventId = eventId;
+    public SeatInventoryRecord(EventRecord event, Integer totalSeats, Integer remainingSeats) {
+        this.event = event;
         this.totalSeats = totalSeats;
         this.remainingSeats = remainingSeats;
-        this.updatedAt = updatedAt;
     }
 
     @PrePersist
     @PreUpdate
-    public void updateTimestamp() {
-        updatedAt = LocalDateTime.now();
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
-    // getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
+    public EventRecord getEvent() { return event; }
+    public void setEvent(EventRecord event) { this.event = event; }
 
     public Integer getTotalSeats() { return totalSeats; }
     public void setTotalSeats(Integer totalSeats) { this.totalSeats = totalSeats; }

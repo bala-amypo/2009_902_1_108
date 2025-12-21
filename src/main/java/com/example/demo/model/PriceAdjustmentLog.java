@@ -11,43 +11,36 @@ public class PriceAdjustmentLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private EventRecord event;
 
     private Double oldPrice;
-
     private Double newPrice;
-
     private String reason;
 
     private LocalDateTime changedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", insertable = false, updatable = false)
-    private EventRecord eventRecord;
-
     public PriceAdjustmentLog() {}
 
-    public PriceAdjustmentLog(Long id, Long eventId, Double oldPrice, Double newPrice,
-                              String reason, LocalDateTime changedAt) {
-        this.id = id;
-        this.eventId = eventId;
+    public PriceAdjustmentLog(EventRecord event, Double oldPrice, Double newPrice, String reason) {
+        this.event = event;
         this.oldPrice = oldPrice;
         this.newPrice = newPrice;
         this.reason = reason;
-        this.changedAt = changedAt;
     }
 
     @PrePersist
-    public void setTimestamp() {
-        changedAt = LocalDateTime.now();
+    public void prePersist() {
+        this.changedAt = LocalDateTime.now();
     }
 
-    // getters and setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
+    public EventRecord getEvent() { return event; }
+    public void setEvent(EventRecord event) { this.event = event; }
 
     public Double getOldPrice() { return oldPrice; }
     public void setOldPrice(Double oldPrice) { this.oldPrice = oldPrice; }

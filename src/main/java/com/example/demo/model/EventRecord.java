@@ -16,6 +16,7 @@ public class EventRecord {
     @Column(unique = true, nullable = false)
     private String eventCode;
 
+    @Column(nullable = false)
     private String eventName;
 
     private String venue;
@@ -29,38 +30,32 @@ public class EventRecord {
 
     private Boolean active = true;
 
-    @OneToMany(mappedBy = "eventRecord", cascade = CascadeType.ALL)
-    private List<SeatInventoryRecord> seatInventoryRecords;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<SeatInventoryRecord> inventories;
 
-    @OneToMany(mappedBy = "eventRecord", cascade = CascadeType.ALL)
-    private List<DynamicPriceRecord> dynamicPriceRecords;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<DynamicPriceRecord> dynamicPrices;
 
-    @OneToMany(mappedBy = "eventRecord", cascade = CascadeType.ALL)
-    private List<PriceAdjustmentLog> priceAdjustmentLogs;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<PriceAdjustmentLog> adjustmentLogs;
 
     public EventRecord() {}
 
-    public EventRecord(Long id, String eventCode, String eventName, String venue, LocalDate eventDate,
-                       Double basePrice, LocalDateTime createdAt, Boolean active) {
-        this.id = id;
+    public EventRecord(String eventCode, String eventName, String venue, LocalDate eventDate, Double basePrice, Boolean active) {
         this.eventCode = eventCode;
         this.eventName = eventName;
         this.venue = venue;
         this.eventDate = eventDate;
         this.basePrice = basePrice;
-        this.createdAt = createdAt;
         this.active = active;
     }
 
     @PrePersist
-    public void onCreate() {
-        createdAt = LocalDateTime.now();
-        if (active == null) active = true;
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    // Getters + Setters
-    // ------------------------------------------
-
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -84,4 +79,13 @@ public class EventRecord {
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
+
+    public List<SeatInventoryRecord> getInventories() { return inventories; }
+    public void setInventories(List<SeatInventoryRecord> inventories) { this.inventories = inventories; }
+
+    public List<DynamicPriceRecord> getDynamicPrices() { return dynamicPrices; }
+    public void setDynamicPrices(List<DynamicPriceRecord> dynamicPrices) { this.dynamicPrices = dynamicPrices; }
+
+    public List<PriceAdjustmentLog> getAdjustmentLogs() { return adjustmentLogs; }
+    public void setAdjustmentLogs(List<PriceAdjustmentLog> adjustmentLogs) { this.adjustmentLogs = adjustmentLogs; }
 }
