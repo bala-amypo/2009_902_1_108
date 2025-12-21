@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.EventRecord;
 import com.example.demo.model.SeatInventoryRecord;
 import com.example.demo.repository.EventRecordRepository;
@@ -9,6 +8,7 @@ import com.example.demo.repository.SeatInventoryRecordRepository;
 import com.example.demo.service.SeatInventoryService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,32 +26,37 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
     @Override
     public SeatInventoryRecord createInventory(SeatInventoryRecord inventory) {
-        EventRecord event = eventRepository.findById(inventory.getEventId())
+        // Validate event exists
+        EventRecord event = eventRepository.findById(inventory.getEvent().getId())
                 .orElseThrow(() -> new BadRequestException("Event not found"));
 
+        // Validate remainingSeats <= totalSeats
         if (inventory.getRemainingSeats() > inventory.getTotalSeats()) {
             throw new BadRequestException("Remaining seats cannot exceed total seats");
         }
 
+        inventory.setEvent(event);
+        inventory.setUpdatedAt(LocalDateTime.now());
         return inventoryRepository.save(inventory);
     }
 
     @Override
     public SeatInventoryRecord updateRemainingSeats(Long eventId, Integer remainingSeats) {
-        SeatInventoryRecord record = inventoryRepository.findByEventId(eventId).stream().findFirst()
+        SeatInventoryRecord inventory = inventoryRepository.findByEventId(eventId)
                 .orElseThrow(() -> new BadRequestException("Seat inventory not found"));
 
-        if (remainingSeats > record.getTotalSeats()) {
+        if (remainingSeats > inventory.getTotalSeats()) {
             throw new BadRequestException("Remaining seats cannot exceed total seats");
         }
 
-        record.setRemainingSeats(remainingSeats);
-        return inventoryRepository.save(record);
+        inventory.setRemainingSeats(remainingSeats);
+        inventory.setUpdatedAt(LocalDateTime.now());
+        return inventoryRepository.save(inventory);
     }
 
     @Override
     public Optional<SeatInventoryRecord> getInventoryByEvent(Long eventId) {
-        return inventoryRepository.findByEventId(eventId).stream().findFirst();
+        return inventoryRepository.findByEventId(eventId);
     }
 
     @Override
