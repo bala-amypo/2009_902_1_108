@@ -1,23 +1,20 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.PricingRule;
-import com.example.demo.repository.PricingRuleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
-@Service
-public class PricingRuleService {
+public interface PricingRuleService {
 
-    @Autowired
-    private PricingRuleRepository repo;
+    PricingRule createRule(PricingRule rule) throws BadRequestException;
 
-    public PricingRule addRule(PricingRule rule) {
-        return repo.save(rule);
-    }
+    PricingRule updateRule(Long id, PricingRule updatedRule) throws BadRequestException;
 
-    public List<PricingRule> getRulesForEvent(Long eventId) {
-        return repo.findByEventId(eventId);
-    }
+    List<PricingRule> getActiveRules();
+
+    Optional<PricingRule> getRuleByCode(String ruleCode);
+
+    List<PricingRule> getAllRules();
 }
