@@ -21,16 +21,14 @@ public class PriceAdjustmentLog {
 
     private LocalDateTime changedAt;
 
-    @PrePersist
-    public void onCreate() {
-        this.changedAt = LocalDateTime.now();
-    }
+    @ManyToOne
+    @JoinColumn(name = "event_id", insertable = false, updatable = false)
+    private EventRecord eventRecord;
 
     public PriceAdjustmentLog() {}
 
-    public PriceAdjustmentLog(Long id, Long eventId, Double oldPrice,
-                              Double newPrice, String reason,
-                              LocalDateTime changedAt) {
+    public PriceAdjustmentLog(Long id, Long eventId, Double oldPrice, Double newPrice,
+                              String reason, LocalDateTime changedAt) {
         this.id = id;
         this.eventId = eventId;
         this.oldPrice = oldPrice;
@@ -39,5 +37,27 @@ public class PriceAdjustmentLog {
         this.changedAt = changedAt;
     }
 
-    // getters + setters
+    @PrePersist
+    public void setTimestamp() {
+        changedAt = LocalDateTime.now();
+    }
+
+    // getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
+
+    public Double getOldPrice() { return oldPrice; }
+    public void setOldPrice(Double oldPrice) { this.oldPrice = oldPrice; }
+
+    public Double getNewPrice() { return newPrice; }
+    public void setNewPrice(Double newPrice) { this.newPrice = newPrice; }
+
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
+
+    public LocalDateTime getChangedAt() { return changedAt; }
+    public void setChangedAt(LocalDateTime changedAt) { this.changedAt = changedAt; }
 }

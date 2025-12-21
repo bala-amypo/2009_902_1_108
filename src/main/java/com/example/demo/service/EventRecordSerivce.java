@@ -1,31 +1,21 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.EventRecord;
-import com.example.demo.repository.EventRecordRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
-@Service
-public class EventService {
+public interface EventRecordService {
 
-    @Autowired
-    private EventRecordRepository eventRepository;
+    EventRecord createEvent(EventRecord event) throws BadRequestException;
 
-    public EventRecord create(EventRecord e) {
-        return eventRepository.save(e);
-    }
+    EventRecord getEventById(Long id) throws ResourceNotFoundException;
 
-    public List<EventRecord> getAll() {
-        return eventRepository.findAll();
-    }
+    Optional<EventRecord> getEventByCode(String eventCode);
 
-    public EventRecord get(Long id) {
-        return eventRepository.findById(id).orElseThrow();
-    }
+    List<EventRecord> getAllEvents();
 
-    public void delete(Long id) {
-        eventRepository.deleteById(id);
-    }
+    EventRecord updateEventStatus(Long id, boolean active) throws ResourceNotFoundException;
 }
