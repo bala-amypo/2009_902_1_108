@@ -1,17 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.model.PriceAdjustmentLog;
-import com.example.demo.repository.PriceAdjustmentLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class PriceAdjustmentLogService {
+import java.util.List;
 
-    @Autowired
-    private PriceAdjustmentLogRepository repo;
+public interface PriceAdjustmentLogService {
 
-    public PriceAdjustmentLog log(PriceAdjustmentLog log) {
-        return repo.save(log);
-    }
+    PriceAdjustmentLog logAdjustment(PriceAdjustmentLog log);
+
+    List<PriceAdjustmentLog> getAdjustmentsByEvent(Long eventId);
+
+    List<PriceAdjustmentLog> getAllAdjustments();
 }

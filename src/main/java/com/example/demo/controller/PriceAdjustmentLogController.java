@@ -16,27 +16,21 @@ public class PriceAdjustmentLogController {
         this.logService = logService;
     }
 
-    // POST /api/price-adjustments
+    // Log adjustment manually
     @PostMapping
-    public PriceAdjustmentLog createLog(@RequestBody PriceAdjustmentLog log) {
+    public PriceAdjustmentLog logAdjustment(@RequestBody PriceAdjustmentLog log) {
         return logService.logAdjustment(log);
     }
 
-    // GET /api/price-adjustments/event/{eventId}
+    // Get adjustments by event
     @GetMapping("/event/{eventId}")
-    public List<PriceAdjustmentLog> getLogsByEvent(@PathVariable Long eventId) {
+    public List<PriceAdjustmentLog> getAdjustmentsByEvent(@PathVariable Long eventId) {
         return logService.getAdjustmentsByEvent(eventId);
     }
 
-    // GET /api/price-adjustments
+    // Get all adjustments
     @GetMapping
-    public List<PriceAdjustmentLog> getAllLogs() {
+    public List<PriceAdjustmentLog> getAllAdjustments() {
         return logService.getAllAdjustments();
-    }
-
-    // GET /api/price-adjustments/{id}
-    @GetMapping("/{id}")
-    public PriceAdjustmentLog getLogById(@PathVariable Long id) {
-        return logService.getLogById(id);
     }
 }
