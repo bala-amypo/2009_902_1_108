@@ -27,7 +27,6 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
-    // Check email exists
     @GetMapping("/exists/{email}")
     public boolean existsByEmail(@PathVariable String email) {
         return userService.existsByEmail(email);
