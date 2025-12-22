@@ -16,13 +16,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    // Create user
     @PostMapping
     public User createUser(@RequestBody User user) {
         return userService.save(user);
     }
 
-    // Get user by email
     @GetMapping("/email/{email}")
     public User getUserByEmail(@PathVariable String email) {
         return userService.findByEmail(email)
