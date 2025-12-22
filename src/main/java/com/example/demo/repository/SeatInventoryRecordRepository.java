@@ -9,6 +9,5 @@ import java.util.Optional;
 @Repository
 public interface SeatInventoryRecordRepository extends JpaRepository<SeatInventoryRecord, Long> {
 
-    // Return Optional for a single inventory by event
     Optional<SeatInventoryRecord> findByEventId(Long eventId);
 }
