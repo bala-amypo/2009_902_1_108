@@ -1,14 +1,10 @@
 package com.example.demo.security;
 
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService {
 
     private static final Map<String, Map<String, Object>> USERS = new HashMap<>();
     private static final AtomicLong ID_GEN = new AtomicLong(1);
@@ -30,18 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
-
-        Map<String, Object> user = USERS.get(username);
+    public Map<String, Object> loadUserByUsername(String email) {
+        Map<String, Object> user = USERS.get(email);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + username);
+            throw new RuntimeException("User not found: " + email);
         }
-
-        return User.withUsername((String) user.get("email"))
-                .password((String) user.get("password"))
-                .authorities((String) user.get("role"))
-                .build();
+        return user;
     }
 }

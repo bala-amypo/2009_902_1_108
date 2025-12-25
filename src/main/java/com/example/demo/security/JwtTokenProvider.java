@@ -1,43 +1,36 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.Authentication;
-
-import java.security.Key;
-import java.util.Date;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 public class JwtTokenProvider {
 
-    private final Key key;
-    private final long validityInMs;
+    private final String secret;
+    private final long validity;
     private final boolean enabled;
 
-    public JwtTokenProvider(String secret, long validityInMs, boolean enabled) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.validityInMs = validityInMs;
+    public JwtTokenProvider(String secret, long validity, boolean enabled) {
+        this.secret = secret;
+        this.validity = validity;
         this.enabled = enabled;
     }
 
-    public String generateToken(Authentication authentication, Long userId, String role) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + validityInMs);
+    public String generateToken(Object authentication, Long userId, String role) {
+        String email = authentication.toString();
 
-        return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("userId", userId)
-                .claim("role", role)
-                .claim("email", authentication.getName())
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String raw =
+                email + "|" +
+                userId + "|" +
+                role + "|" +
+                System.currentTimeMillis();
+
+        return Base64.getEncoder().encodeToString(raw.getBytes());
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Base64.getDecoder().decode(token);
             return true;
         } catch (Exception ex) {
             return false;
@@ -45,15 +38,18 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromToken(String token) {
-        return getAllClaims(token).getSubject();
+        return (String) getAllClaims(token).get("email");
     }
 
     public Map<String, Object> getAllClaims(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        String decoded = new String(Base64.getDecoder().decode(token));
+        String[] parts = decoded.split("\\|");
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", parts[0]);
+        claims.put("userId", Long.parseLong(parts[1]));
+        claims.put("role", parts[2]);
+
         return claims;
     }
 }
