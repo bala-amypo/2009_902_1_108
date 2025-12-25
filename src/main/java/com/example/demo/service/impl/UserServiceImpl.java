@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUsername(String username) {
-        // Since your entity does not have username, we can map it to email
+        // Map username to email
         return repo.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
