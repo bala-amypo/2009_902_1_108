@@ -1,43 +1,38 @@
-package com.example.demo.model;
+package com.example.demo.controller;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import com.example.demo.model.SeatInventoryRecord;
+import com.example.demo.service.SeatInventoryService;
+import org.springframework.web.bind.annotation.*;
 
-@Entity
-@Table(name = "seat_inventory")
-public class SeatInventoryRecord {
+import java.util.List;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RestController
+@RequestMapping("/api/inventory")
+public class SeatInventoryController {
 
-    private Long eventId;
-    private String seatNumber;
-    private Boolean available;
-    private LocalDateTime bookedAt;
+    private final SeatInventoryService inventoryService;
 
-    public SeatInventoryRecord() {
-        this.available = true;
+    public SeatInventoryController(SeatInventoryService inventoryService) {
+        this.inventoryService = inventoryService;
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    @PostMapping("/create")
+    public SeatInventoryRecord createInventory(@RequestBody SeatInventoryRecord inv) {
+        return inventoryService.createInventory(inv);
+    }
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
+    @GetMapping("/event/{eventId}")
+    public SeatInventoryRecord getInventory(@PathVariable Long eventId) {
+        return inventoryService.getInventoryByEvent(eventId);
+    }
 
-    public String getSeatNumber() { return seatNumber; }
-    public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
+    @PutMapping("/update/{eventId}")
+    public SeatInventoryRecord updateRemainingSeats(@PathVariable Long eventId, @RequestParam Integer remainingSeats) {
+        return inventoryService.updateRemainingSeats(eventId, remainingSeats); // fixed
+    }
 
-    public Boolean getAvailable() { return available; }
-    public void setAvailable(Boolean available) { this.available = available; }
-
-    public LocalDateTime getBookedAt() { return bookedAt; }
-    public void setBookedAt(LocalDateTime bookedAt) { this.bookedAt = bookedAt; }
-
-    @PrePersist
-    public void prePersist() {
-        if (available == null) available = true;
+    @GetMapping("/all")
+    public List<SeatInventoryRecord> getAllInventories() {
+        return inventoryService.getAllInventories(); // fixed
     }
 }
