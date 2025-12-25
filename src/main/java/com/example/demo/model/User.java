@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -33,10 +32,11 @@ public class User {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    // One-to-Many relationship with Address
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id") // Foreign key in Address table
-    private List<Address> addresses = new ArrayList<>();
+    // Example of a relationship-like field without another entity
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
 
     public User() {
     }
@@ -48,7 +48,7 @@ public class User {
         this.password = password;
     }
 
-    // Getters and Setters
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -90,11 +90,11 @@ public class User {
         this.password = password;
     }
 
-    public List<Address> getAddresses() {
-        return addresses;
+    public Set<String> getRoles() {
+        return roles;
     }
 
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 }
