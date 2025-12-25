@@ -17,65 +17,35 @@ public class PricingRule {
     private int maxRemainingSeats;
     private int daysBeforeEvent;
 
-    private double priceMultiplier; // your existing multiplier
+    private double priceMultiplier; // used as discount multiplier
     private boolean active;
 
     public PricingRule() {}
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
+    // Standard getters and setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getRuleCode() { return ruleCode; }
+    public void setRuleCode(String ruleCode) { this.ruleCode = ruleCode; }
 
-    public String getRuleCode() {
-        return ruleCode;
-    }
+    public int getMinRemainingSeats() { return minRemainingSeats; }
+    public void setMinRemainingSeats(int minRemainingSeats) { this.minRemainingSeats = minRemainingSeats; }
 
-    public void setRuleCode(String ruleCode) {
-        this.ruleCode = ruleCode;
-    }
+    public int getMaxRemainingSeats() { return maxRemainingSeats; }
+    public void setMaxRemainingSeats(int maxRemainingSeats) { this.maxRemainingSeats = maxRemainingSeats; }
 
-    public int getMinRemainingSeats() {
-        return minRemainingSeats;
-    }
+    public int getDaysBeforeEvent() { return daysBeforeEvent; }
+    public void setDaysBeforeEvent(int daysBeforeEvent) { this.daysBeforeEvent = daysBeforeEvent; }
 
-    public void setMinRemainingSeats(int minRemainingSeats) {
-        this.minRemainingSeats = minRemainingSeats;
-    }
+    public double getPriceMultiplier() { return priceMultiplier; }
+    public void setPriceMultiplier(double priceMultiplier) { this.priceMultiplier = priceMultiplier; }
 
-    public int getMaxRemainingSeats() {
-        return maxRemainingSeats;
-    }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
-    public void setMaxRemainingSeats(int maxRemainingSeats) {
-        this.maxRemainingSeats = maxRemainingSeats;
-    }
-
-    public int getDaysBeforeEvent() {
-        return daysBeforeEvent;
-    }
-
-    public void setDaysBeforeEvent(int daysBeforeEvent) {
-        this.daysBeforeEvent = daysBeforeEvent;
-    }
-
-    public double getPriceMultiplier() { // this replaces getDiscount()
+    // Add this for compatibility with DynamicPricingEngineServiceImpl
+    public Double getDiscount() {
         return priceMultiplier;
-    }
-
-    public void setPriceMultiplier(double priceMultiplier) {
-        this.priceMultiplier = priceMultiplier;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

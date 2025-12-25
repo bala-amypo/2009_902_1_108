@@ -11,32 +11,23 @@ public class SeatInventoryRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "event_id", nullable = false)
-    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private EventRecord event;
 
-    @Column(name = "seat_number")
     private String seatNumber;
-
-    @Column(name = "available")
     private Boolean available = true;
-
-    @Column(name = "booked_at")
     private LocalDateTime bookedAt;
-
-    @Column(name = "remaining_seats")
     private Integer remainingSeats;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     public SeatInventoryRecord() {}
 
-    // Getters and Setters
+    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
+    public EventRecord getEvent() { return event; }
+    public void setEvent(EventRecord event) { this.event = event; }
 
     public String getSeatNumber() { return seatNumber; }
     public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
@@ -50,19 +41,13 @@ public class SeatInventoryRecord {
     public Integer getRemainingSeats() { return remainingSeats; }
     public void setRemainingSeats(Integer remainingSeats) { this.remainingSeats = remainingSeats; }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    // Added for DynamicPricingEngineServiceImpl
+    public Double getBasePrice() {
+        return event != null ? event.getBasePrice() : 0;
+    }
 
-    // Set default values before persisting
     @PrePersist
     public void prePersist() {
         if (available == null) available = true;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    // Update timestamp before updating
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
     }
 }
