@@ -19,13 +19,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        // Check if email already exists
-        if (repo.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists: " + user.getEmail());
-        }
-        // Check if username already exists
         if (repo.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists: " + user.getUsername());
+        }
+        if (repo.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists: " + user.getEmail());
         }
         return repo.save(user);
     }
@@ -33,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
     }
 
     @Override
@@ -44,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long id, User user) {
         User existing = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
 
         existing.setUsername(user.getUsername());
         existing.setEmail(user.getEmail());
@@ -55,14 +53,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         User existing = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("User not found: " + id));
         repo.delete(existing);
     }
 
     @Override
     public User getUserByUsername(String username) {
         return repo.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
     @Override
