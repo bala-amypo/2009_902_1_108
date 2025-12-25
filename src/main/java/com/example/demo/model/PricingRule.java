@@ -1,62 +1,28 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "pricing_rules")
 public class PricingRule {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(unique = true, nullable = false)
     private String ruleCode;
+    private int minRemainingSeats;
+    private int maxRemainingSeats;
+    private int daysBeforeEvent;
+    private double priceMultiplier;
+    private boolean active;
 
-    private String description;
-    private Integer minRemainingSeats;
-    private Integer maxRemainingSeats;
-    private Integer daysBeforeEvent;
-
-    @Column(nullable = false)
-    private Double priceMultiplier;
-
-    private Boolean active = true;
-
-    public PricingRule() {}
-
-    public PricingRule(String ruleCode, String description, Integer minRemainingSeats, Integer maxRemainingSeats, Integer daysBeforeEvent, Double priceMultiplier, Boolean active) {
-        this.ruleCode = ruleCode;
-        this.description = description;
-        this.minRemainingSeats = minRemainingSeats;
-        this.maxRemainingSeats = maxRemainingSeats;
-        this.daysBeforeEvent = daysBeforeEvent;
-        this.priceMultiplier = priceMultiplier;
-        this.active = active;
-    }
-
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public String getRuleCode() { return ruleCode; }
     public void setRuleCode(String ruleCode) { this.ruleCode = ruleCode; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public Integer getMinRemainingSeats() { return minRemainingSeats; }
-    public void setMinRemainingSeats(Integer minRemainingSeats) { this.minRemainingSeats = minRemainingSeats; }
-
-    public Integer getMaxRemainingSeats() { return maxRemainingSeats; }
-    public void setMaxRemainingSeats(Integer maxRemainingSeats) { this.maxRemainingSeats = maxRemainingSeats; }
-
-    public Integer getDaysBeforeEvent() { return daysBeforeEvent; }
-    public void setDaysBeforeEvent(Integer daysBeforeEvent) { this.daysBeforeEvent = daysBeforeEvent; }
-
-    public Double getPriceMultiplier() { return priceMultiplier; }
-    public void setPriceMultiplier(Double priceMultiplier) { this.priceMultiplier = priceMultiplier; }
-
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    public int getMinRemainingSeats() { return minRemainingSeats; }
+    public void setMinRemainingSeats(int minRemainingSeats) { this.minRemainingSeats = minRemainingSeats; }
+    public int getMaxRemainingSeats() { return maxRemainingSeats; }
+    public void setMaxRemainingSeats(int maxRemainingSeats) { this.maxRemainingSeats = maxRemainingSeats; }
+    public int getDaysBeforeEvent() { return daysBeforeEvent; }
+    public void setDaysBeforeEvent(int daysBeforeEvent) { this.daysBeforeEvent = daysBeforeEvent; }
+    public double getPriceMultiplier() { return priceMultiplier; }
+    public void setPriceMultiplier(double priceMultiplier) { this.priceMultiplier = priceMultiplier; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }
