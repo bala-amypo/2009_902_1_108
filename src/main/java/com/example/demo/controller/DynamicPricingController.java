@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pricing")
+@RequestMapping("/api/dynamic-pricing")
 public class DynamicPricingController {
 
     private final DynamicPricingEngineService pricingService;
@@ -16,23 +16,19 @@ public class DynamicPricingController {
         this.pricingService = pricingService;
     }
 
-    @GetMapping("/compute/{eventId}")
-    public DynamicPriceRecord computePrice(@PathVariable Long eventId) {
+    @GetMapping("/{eventId}")
+    public DynamicPriceRecord getPrice(@PathVariable Long eventId) {
+        // Call the existing computeDynamicPrice() method
         return pricingService.computeDynamicPrice(eventId);
     }
 
-    @GetMapping("/latest/{eventId}")
-    public DynamicPriceRecord getLatestPrice(@PathVariable Long eventId) {
-        return pricingService.getLatestPrice(eventId); // fixed
-    }
-
-    @GetMapping("/history/{eventId}")
+    @GetMapping("/{eventId}/history")
     public List<DynamicPriceRecord> getPriceHistory(@PathVariable Long eventId) {
         return pricingService.getPriceHistory(eventId);
     }
 
     @GetMapping("/all")
-    public List<DynamicPriceRecord> getAllComputedPrices() {
+    public List<DynamicPriceRecord> getAllPrices() {
         return pricingService.getAllComputedPrices();
     }
 }
