@@ -1,16 +1,10 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "event_record")
 public class EventRecord {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String eventCode;
     private String eventName;
     private String venue;
@@ -18,11 +12,13 @@ public class EventRecord {
     private Double basePrice;
     private Boolean active;
 
-    public EventRecord() {
-        this.active = true;
+    public void prePersist() {
+        if (active == null) {
+            active = true;
+        }
     }
 
-    // Getters and setters
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -43,15 +39,4 @@ public class EventRecord {
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
-
-    // Alias getters if needed
-    public String getName() { return eventName; }
-    public String getLocation() { return venue; }
-    public LocalDate getDate() { return eventDate; }
-
-    // Set default values before persisting
-    @PrePersist
-    public void prePersist() {
-        if (active == null) active = true;
-    }
 }

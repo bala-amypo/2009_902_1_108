@@ -1,86 +1,26 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "dynamic_price_records")
 public class DynamicPriceRecord {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private EventRecord event;
-
-    @Column(name = "computed_price", nullable = false)
+    private Long eventId;
     private Double computedPrice;
-
-    @Column(name = "applied_rule_codes")
     private String appliedRuleCodes;
-
-    @Column(name = "computed_at")
     private LocalDateTime computedAt;
 
-    public DynamicPriceRecord() {
-    }
-
-    public DynamicPriceRecord(EventRecord event,
-                              Double computedPrice,
-                              String appliedRuleCodes) {
-        this.event = event;
-        this.computedPrice = computedPrice;
-        this.appliedRuleCodes = appliedRuleCodes;
-    }
-
-    // ---------- JPA Lifecycle ----------
-    @PrePersist
     public void prePersist() {
-        if (this.computedAt == null) {
-            this.computedAt = LocalDateTime.now();
-        }
+        this.computedAt = LocalDateTime.now();
     }
 
-    // ---------- Getters & Setters ----------
-    public Long getId() {
-        return id;
-    }
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Double getComputedPrice() { return computedPrice; }
+    public void setComputedPrice(Double computedPrice) { this.computedPrice = computedPrice; }
 
-    public EventRecord getEvent() {
-        return event;
-    }
+    public String getAppliedRuleCodes() { return appliedRuleCodes; }
+    public void setAppliedRuleCodes(String appliedRuleCodes) { this.appliedRuleCodes = appliedRuleCodes; }
 
-    public void setEvent(EventRecord event) {
-        this.event = event;
-    }
-
-    public Double getComputedPrice() {
-        return computedPrice;
-    }
-
-    public void setComputedPrice(Double computedPrice) {
-        this.computedPrice = computedPrice;
-    }
-
-    public String getAppliedRuleCodes() {
-        return appliedRuleCodes;
-    }
-
-    public void setAppliedRuleCodes(String appliedRuleCodes) {
-        this.appliedRuleCodes = appliedRuleCodes;
-    }
-
-    public LocalDateTime getComputedAt() {
-        return computedAt;
-    }
-
-    public void setComputedAt(LocalDateTime computedAt) {
-        this.computedAt = computedAt;
-    }
+    public LocalDateTime getComputedAt() { return computedAt; }
 }
