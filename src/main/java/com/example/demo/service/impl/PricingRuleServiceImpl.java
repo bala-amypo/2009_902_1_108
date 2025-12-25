@@ -1,12 +1,14 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.PricingRule;
 import com.example.demo.repository.PricingRuleRepository;
 import com.example.demo.service.PricingRuleService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Service
 public class PricingRuleServiceImpl implements PricingRuleService {
 
     private final PricingRuleRepository repo;
@@ -17,31 +19,27 @@ public class PricingRuleServiceImpl implements PricingRuleService {
 
     @Override
     public PricingRule createRule(PricingRule rule) {
-        if (rule.getPriceMultiplier() <= 0) throw new BadRequestException("Price multiplier must be > 0");
-        if (repo.existsByRuleCode(rule.getRuleCode())) throw new BadRequestException("Rule code exists");
+        if (repo.existsByRuleCode(rule.getRuleCode())) {
+            throw new RuntimeException("Rule code already exists");
+        }
         return repo.save(rule);
     }
 
     @Override
-    public List<PricingRule> getAllRules() {
-        return repo.findAll();
+    public PricingRule updateRule(Long id, PricingRule updatedRule) {
+        PricingRule rule = repo.findById(id).orElseThrow(() -> new RuntimeException("Rule not found"));
+        rule.setRuleName(updatedRule.getRuleName());
+        rule.setActive(updatedRule.isActive());
+        return repo.save(rule);
+    }
+
+    @Override
+    public PricingRule getRuleByCode(String ruleCode) {
+        return repo.findByRuleCode(ruleCode);
     }
 
     @Override
     public List<PricingRule> getActiveRules() {
-        return repo.findByActiveTrue();
-    }
-
-    @Override
-    public PricingRule updateRule(Long id, PricingRule rule) {
-        PricingRule existing = repo.findById(id).orElseThrow(() -> new RuntimeException("Rule not found"));
-        existing.setPriceMultiplier(rule.getPriceMultiplier());
-        existing.setActive(rule.getActive());
-        return repo.save(existing);
-    }
-
-    @Override
-    public PricingRule getRuleByCode(String code) {
-        return repo.findByRuleCode(code).orElseThrow(() -> new RuntimeException("Rule not found"));
+        return repo.findByActiveTrue().stream().toList();
     }
 }
