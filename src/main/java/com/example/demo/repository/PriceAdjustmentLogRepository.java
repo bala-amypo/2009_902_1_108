@@ -1,9 +1,10 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.PriceAdjustmentLog;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PriceAdjustmentLogRepository {
-    PriceAdjustmentLog save(PriceAdjustmentLog log);
-    List<PriceAdjustmentLog> findByEventId(Long eventId);
+@Repository
+public interface PriceAdjustmentLogRepository extends JpaRepository<PriceAdjustmentLog, Long> {
+    // JpaRepository already provides findAll(), save(), findById(), deleteById(), etc.
 }

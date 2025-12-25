@@ -1,11 +1,13 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.PricingRule;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PricingRuleRepository {
-    boolean existsByRuleCode(String code);
-    PricingRule save(PricingRule rule);
-    List<PricingRule> findAll();
-    List<PricingRule> findByActiveTrue();
+@Repository
+public interface PricingRuleRepository extends JpaRepository<PricingRule, Long> {
+    PricingRule findByRuleCode(String ruleCode);
+    // You can define custom queries if needed, e.g.:
+    // @Query("SELECT r FROM PricingRule r WHERE r.active = true")
+    // PricingRule getActive();
 }
