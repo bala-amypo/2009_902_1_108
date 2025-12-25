@@ -11,23 +11,28 @@ public class SeatInventoryRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
-    private EventRecord event;
+    @Column(name = "event_id", nullable = false)
+    private Long eventId;
 
+    @Column(name = "seat_number")
     private String seatNumber;
+
+    @Column(name = "available")
     private Boolean available = true;
-    private LocalDateTime bookedAt;
+
+    @Column(name = "remaining_seats")
     private Integer remainingSeats;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public SeatInventoryRecord() {}
 
-    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public EventRecord getEvent() { return event; }
-    public void setEvent(EventRecord event) { this.event = event; }
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
 
     public String getSeatNumber() { return seatNumber; }
     public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
@@ -35,19 +40,15 @@ public class SeatInventoryRecord {
     public Boolean getAvailable() { return available; }
     public void setAvailable(Boolean available) { this.available = available; }
 
-    public LocalDateTime getBookedAt() { return bookedAt; }
-    public void setBookedAt(LocalDateTime bookedAt) { this.bookedAt = bookedAt; }
-
     public Integer getRemainingSeats() { return remainingSeats; }
     public void setRemainingSeats(Integer remainingSeats) { this.remainingSeats = remainingSeats; }
 
-    // Added for DynamicPricingEngineServiceImpl
-    public Double getBasePrice() {
-        return event != null ? event.getBasePrice() : 0;
-    }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     @PrePersist
-    public void prePersist() {
+    @PreUpdate
+    public void updateTimestamp() {
+        this.updatedAt = LocalDateTime.now();
         if (available == null) available = true;
     }
 }
