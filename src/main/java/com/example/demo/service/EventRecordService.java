@@ -11,14 +11,9 @@ public interface EventRecordService {
 
     EventRecord getEventById(Long id);
 
+    Optional<EventRecord> getEventByCode(String code);
+
     List<EventRecord> getAllEvents();
 
-    EventRecord updateEvent(Long id, EventRecord event);
-
-    void deleteEvent(Long id);
-
-    // Add these so impl can @Override them
     EventRecord updateEventStatus(Long id, boolean active);
-
-    Optional<EventRecord> getEventByCode(String eventCode);
 }
