@@ -1,10 +1,10 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.DynamicPriceRecord;
-import com.example.demo.model.SeatInventoryRecord;
+import com.example.demo.model.EventRecord;
 import com.example.demo.model.PricingRule;
 import com.example.demo.repository.DynamicPriceRecordRepository;
-import com.example.demo.repository.SeatInventoryRecordRepository;
+import com.example.demo.repository.EventRecordRepository;
 import com.example.demo.repository.PricingRuleRepository;
 import com.example.demo.service.DynamicPricingEngineService;
 import org.springframework.stereotype.Service;
@@ -14,30 +14,38 @@ import java.util.List;
 @Service
 public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineService {
 
-    private final SeatInventoryRecordRepository seatRepo;
+    private final EventRecordRepository eventRepo;
     private final PricingRuleRepository ruleRepo;
     private final DynamicPriceRecordRepository priceRepo;
 
-    public DynamicPricingEngineServiceImpl(SeatInventoryRecordRepository seatRepo,
+    public DynamicPricingEngineServiceImpl(EventRecordRepository eventRepo,
                                            PricingRuleRepository ruleRepo,
                                            DynamicPriceRecordRepository priceRepo) {
-        this.seatRepo = seatRepo;
+        this.eventRepo = eventRepo;
         this.ruleRepo = ruleRepo;
         this.priceRepo = priceRepo;
     }
 
     @Override
     public DynamicPriceRecord computeDynamicPrice(Long eventId) {
-        SeatInventoryRecord seat = seatRepo.findFirstByEventId(eventId)
+
+        EventRecord event = eventRepo.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
 
         List<PricingRule> rules = ruleRepo.findByActiveTrue();
-        double discount = rules.isEmpty() ? 0 : rules.get(0).getDiscount();
+
+        double multiplier = rules.isEmpty()
+                ? 1.0
+                : rules.get(0).getPriceMultiplier();
+
+        double finalPrice = event.getBasePrice() * multiplier;
 
         DynamicPriceRecord record = new DynamicPriceRecord();
-        record.setEvent(seat.getEvent()); // SeatInventoryRecord must have getEvent()
-        record.setComputedPrice(seat.getBasePrice() - discount); // SeatInventoryRecord must have getBasePrice()
-        record.setAppliedRuleCodes(rules.isEmpty() ? "" : rules.get(0).getRuleCode());
+        record.setEvent(event);
+        record.setComputedPrice(finalPrice);
+        record.setAppliedRuleCodes(
+                rules.isEmpty() ? "NONE" : rules.get(0).getRuleCode()
+        );
 
         return priceRepo.save(record);
     }

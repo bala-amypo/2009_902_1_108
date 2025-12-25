@@ -26,7 +26,9 @@ public class DynamicPriceRecord {
 
     public DynamicPriceRecord() {}
 
-    public DynamicPriceRecord(EventRecord event, Double computedPrice, String appliedRuleCodes) {
+    public DynamicPriceRecord(EventRecord event,
+                              Double computedPrice,
+                              String appliedRuleCodes) {
         this.event = event;
         this.computedPrice = computedPrice;
         this.appliedRuleCodes = appliedRuleCodes;
@@ -47,11 +49,17 @@ public class DynamicPriceRecord {
     public void setEvent(EventRecord event) { this.event = event; }
 
     public Double getComputedPrice() { return computedPrice; }
-    public void setComputedPrice(Double computedPrice) { this.computedPrice = computedPrice; }
+    public void setComputedPrice(Double computedPrice) {
+        this.computedPrice = computedPrice;
+    }
 
     public String getAppliedRuleCodes() { return appliedRuleCodes; }
-    public void setAppliedRuleCodes(String appliedRuleCodes) { this.appliedRuleCodes = appliedRuleCodes; }
+    public void setAppliedRuleCodes(String appliedRuleCodes) {
+        this.appliedRuleCodes = appliedRuleCodes;
+    }
 
     public LocalDateTime getComputedAt() { return computedAt; }
-    public void setComputedAt(LocalDateTime computedAt) { this.computedAt = computedAt; }
+    public void setComputedAt(LocalDateTime computedAt) {
+        this.computedAt = computedAt;
+    }
 }

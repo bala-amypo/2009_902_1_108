@@ -42,13 +42,12 @@ public class PricingRuleServiceImpl implements PricingRuleService {
         PricingRule existing = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rule not found: " + id));
 
-        // Use getPriceMultiplier instead of getDiscount
-        existing.setPriceMultiplier(rule.getPriceMultiplier());
-        existing.setActive(rule.isActive());
         existing.setRuleCode(rule.getRuleCode());
         existing.setMinRemainingSeats(rule.getMinRemainingSeats());
         existing.setMaxRemainingSeats(rule.getMaxRemainingSeats());
         existing.setDaysBeforeEvent(rule.getDaysBeforeEvent());
+        existing.setPriceMultiplier(rule.getPriceMultiplier());
+        existing.setActive(rule.isActive());
 
         return repo.save(existing);
     }
