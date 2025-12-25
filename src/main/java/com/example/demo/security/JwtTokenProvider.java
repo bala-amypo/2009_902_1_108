@@ -1,6 +1,8 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.Authentication;
 
 import java.util.Date;
@@ -9,49 +11,51 @@ import java.util.Map;
 
 public class JwtTokenProvider {
 
-    private final String secret;
-    private final long expiration;
-    private final boolean encodeSecret;
+    private final String jwtSecret;
+    private final long jwtExpirationInMs;
+    private final boolean enableClaims;
 
-    public JwtTokenProvider(String secret, long expiration, boolean encodeSecret) {
-        this.secret = secret;
-        this.expiration = expiration;
-        this.encodeSecret = encodeSecret;
+    public JwtTokenProvider(String jwtSecret, long jwtExpirationInMs, boolean enableClaims) {
+        this.jwtSecret = jwtSecret;
+        this.jwtExpirationInMs = jwtExpirationInMs;
+        this.enableClaims = enableClaims;
     }
 
-    public String generateToken(Authentication auth, Long userId, String role) {
+    public String generateToken(Authentication authentication, Long userId, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
-        claims.put("role", role);
-        claims.put("email", auth.getName());
+        if (enableClaims) {
+            claims.put("userId", userId);
+            claims.put("role", role);
+            claims.put("email", authentication.getName());
+        }
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(auth.getName())
                 .setClaims(claims)
+                .setSubject(authentication.getName())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
     public String getUsernameFromToken(String token) {
-        return getAllClaims(token).get("email").toString();
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        return (String) claims.get("email");  // cast manually
     }
 
     public Map<String, Object> getAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        return new HashMap<>(claims);
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-        } catch (Exception ex) {
+        } catch (Exception e) {
             return false;
         }
     }
