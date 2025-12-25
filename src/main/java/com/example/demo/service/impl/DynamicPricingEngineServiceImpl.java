@@ -1,9 +1,9 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.PricingRule;
 import com.example.demo.model.SeatInventoryRecord;
-import com.example.demo.repository.PricingRuleRepository;
+import com.example.demo.model.PricingRule;
 import com.example.demo.repository.SeatInventoryRecordRepository;
+import com.example.demo.repository.PricingRuleRepository;
 import com.example.demo.service.DynamicPricingEngineService;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,22 +14,18 @@ public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineServ
     private final SeatInventoryRecordRepository seatRepo;
     private final PricingRuleRepository ruleRepo;
 
-    public DynamicPricingEngineServiceImpl(SeatInventoryRecordRepository seatRepo, PricingRuleRepository ruleRepo) {
+    public DynamicPricingEngineServiceImpl(SeatInventoryRecordRepository seatRepo,
+                                           PricingRuleRepository ruleRepo) {
         this.seatRepo = seatRepo;
         this.ruleRepo = ruleRepo;
     }
 
     @Override
-    public double getLatestPrice(Long eventId) {
-        // Example logic: get available seats for the event
+    public Double getLatestPrice(Long eventId) {
         List<SeatInventoryRecord> seats = seatRepo.findByEventId(eventId);
-        List<PricingRule> activeRules = ruleRepo.findByActiveTrue().stream().toList();
-
-        // Dummy pricing logic for demo
-        double basePrice = 100.0;
-        if (!activeRules.isEmpty()) {
-            basePrice *= 1.2; // apply rule adjustment
-        }
-        return basePrice;
+        List<PricingRule> rules = ruleRepo.findByActiveTrue();
+        // Simple example: calculate price using first active rule
+        if(seats.isEmpty() || rules.isEmpty()) return 0.0;
+        return seats.get(0).getBasePrice() * (1 - rules.get(0).getDiscount()/100.0);
     }
 }

@@ -26,7 +26,7 @@ public class PriceAdjustmentLogServiceImpl implements PriceAdjustmentLogService 
     }
 
     @Override
-    public List<PriceAdjustmentLog> getAdjustmentsByEvent(Long eventId) {
+    public List<PriceAdjustmentLog> getAdjustmentsByEventId(Long eventId) {
         return repo.findByEventId(eventId);
     }
 }

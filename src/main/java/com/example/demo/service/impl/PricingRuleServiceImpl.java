@@ -4,9 +4,7 @@ import com.example.demo.model.PricingRule;
 import com.example.demo.repository.PricingRuleRepository;
 import com.example.demo.service.PricingRuleService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PricingRuleServiceImpl implements PricingRuleService {
@@ -19,27 +17,29 @@ public class PricingRuleServiceImpl implements PricingRuleService {
 
     @Override
     public PricingRule createRule(PricingRule rule) {
-        if (repo.existsByRuleCode(rule.getRuleCode())) {
+        if(repo.existsByRuleCode(rule.getRuleCode())) {
             throw new RuntimeException("Rule code already exists");
         }
         return repo.save(rule);
     }
 
     @Override
-    public PricingRule updateRule(Long id, PricingRule updatedRule) {
-        PricingRule rule = repo.findById(id).orElseThrow(() -> new RuntimeException("Rule not found"));
-        rule.setRuleName(updatedRule.getRuleName());
-        rule.setActive(updatedRule.isActive());
-        return repo.save(rule);
-    }
-
-    @Override
-    public PricingRule getRuleByCode(String ruleCode) {
-        return repo.findByRuleCode(ruleCode);
+    public PricingRule updateRule(Long id, PricingRule rule) {
+        PricingRule existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rule not found"));
+        existing.setRuleCode(rule.getRuleCode());
+        existing.setActive(rule.isActive());
+        existing.setDiscount(rule.getDiscount());
+        return repo.save(existing);
     }
 
     @Override
     public List<PricingRule> getActiveRules() {
-        return repo.findByActiveTrue().stream().toList();
+        return repo.findByActiveTrue();
+    }
+
+    @Override
+    public PricingRule getRuleByCode(String code) {
+        return repo.findByRuleCode(code);
     }
 }
