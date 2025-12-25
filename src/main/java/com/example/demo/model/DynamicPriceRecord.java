@@ -19,12 +19,13 @@ public class DynamicPriceRecord {
     private Double computedPrice;
 
     @Column(name = "applied_rule_codes")
-    private String appliedRuleCodes; // comma-separated codes
+    private String appliedRuleCodes;
 
     @Column(name = "computed_at")
     private LocalDateTime computedAt;
 
-    public DynamicPriceRecord() {}
+    public DynamicPriceRecord() {
+    }
 
     public DynamicPriceRecord(EventRecord event,
                               Double computedPrice,
@@ -34,31 +35,51 @@ public class DynamicPriceRecord {
         this.appliedRuleCodes = appliedRuleCodes;
     }
 
+    // ---------- JPA Lifecycle ----------
     @PrePersist
     public void prePersist() {
-        if (computedAt == null) {
-            computedAt = LocalDateTime.now();
+        if (this.computedAt == null) {
+            this.computedAt = LocalDateTime.now();
         }
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // ---------- Getters & Setters ----------
+    public Long getId() {
+        return id;
+    }
 
-    public EventRecord getEvent() { return event; }
-    public void setEvent(EventRecord event) { this.event = event; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Double getComputedPrice() { return computedPrice; }
+    public EventRecord getEvent() {
+        return event;
+    }
+
+    public void setEvent(EventRecord event) {
+        this.event = event;
+    }
+
+    public Double getComputedPrice() {
+        return computedPrice;
+    }
+
     public void setComputedPrice(Double computedPrice) {
         this.computedPrice = computedPrice;
     }
 
-    public String getAppliedRuleCodes() { return appliedRuleCodes; }
+    public String getAppliedRuleCodes() {
+        return appliedRuleCodes;
+    }
+
     public void setAppliedRuleCodes(String appliedRuleCodes) {
         this.appliedRuleCodes = appliedRuleCodes;
     }
 
-    public LocalDateTime getComputedAt() { return computedAt; }
+    public LocalDateTime getComputedAt() {
+        return computedAt;
+    }
+
     public void setComputedAt(LocalDateTime computedAt) {
         this.computedAt = computedAt;
     }
