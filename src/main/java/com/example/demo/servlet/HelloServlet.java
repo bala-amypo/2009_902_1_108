@@ -1,23 +1,26 @@
 package com.example.demo.servlet;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.ServletException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@WebServlet(name = "HelloServlet", urlPatterns = "/hello")
 public class HelloServlet extends HttpServlet {
 
-    // MUST be public because tests call it directly
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
 
-        resp.setContentType("text/plain");
-        PrintWriter writer = resp.getWriter();
-        writer.write("Hello, Dynamic Event Ticket Pricing Engine!");
-        writer.flush();
+        response.setContentType("text/plain");
+
+        PrintWriter out = response.getWriter();
+        out.write("Hello from Servlet");
+        out.flush();
     }
 }
