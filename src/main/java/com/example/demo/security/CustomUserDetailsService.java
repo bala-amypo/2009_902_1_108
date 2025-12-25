@@ -1,41 +1,47 @@
 package com.example.demo.security;
 
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
-@Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final Map<String, Map<String, Object>> users = new HashMap<>();
+    private final AtomicLong idGenerator = new AtomicLong(1);
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public Map<String, Object> registerUser(
+            String name,
+            String email,
+            String password,
+            String role) {
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("userId", idGenerator.getAndIncrement());
+        user.put("name", name);
+        user.put("email", email);
+        user.put("password", password);
+        user.put("role", role);
+
+        users.put(email, user);
+        return user;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email)
+    public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with email: " + email));
+        Map<String, Object> user = users.get(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .roles(
-                        user.getRoles()
-                                .stream()
-                                .map(r -> r.replace("ROLE_", ""))
-                                .collect(Collectors.toList())
-                                .toArray(new String[0])
-                )
+        return User.withUsername(username)
+                .password((String) user.get("password"))
+                .authorities(Collections.emptyList())
                 .build();
     }
 }

@@ -1,49 +1,83 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.DynamicPriceRecord;
-import com.example.demo.model.EventRecord;
-import com.example.demo.model.PricingRule;
-import com.example.demo.repository.DynamicPriceRecordRepository;
-import com.example.demo.repository.EventRecordRepository;
-import com.example.demo.repository.PricingRuleRepository;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.model.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.DynamicPricingEngineService;
-import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
 public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineService {
 
     private final EventRecordRepository eventRepo;
+    private final SeatInventoryRecordRepository inventoryRepo;
     private final PricingRuleRepository ruleRepo;
     private final DynamicPriceRecordRepository priceRepo;
+    private final PriceAdjustmentLogRepository logRepo;
 
-    public DynamicPricingEngineServiceImpl(EventRecordRepository eventRepo,
-                                           PricingRuleRepository ruleRepo,
-                                           DynamicPriceRecordRepository priceRepo) {
+    public DynamicPricingEngineServiceImpl(
+            EventRecordRepository eventRepo,
+            SeatInventoryRecordRepository inventoryRepo,
+            PricingRuleRepository ruleRepo,
+            DynamicPriceRecordRepository priceRepo,
+            PriceAdjustmentLogRepository logRepo) {
         this.eventRepo = eventRepo;
+        this.inventoryRepo = inventoryRepo;
         this.ruleRepo = ruleRepo;
         this.priceRepo = priceRepo;
+        this.logRepo = logRepo;
     }
 
     @Override
     public DynamicPriceRecord computeDynamicPrice(Long eventId) {
-
         EventRecord event = eventRepo.findById(eventId)
-                .orElseThrow(() ->
-                        new RuntimeException("Event not found: " + eventId));
+                .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        List<PricingRule> rules = ruleRepo.findByActiveTrue();
+        if (!event.getActive()) {
+            throw new BadRequestException("Event is not active");
+        }
 
-        double multiplier = rules.isEmpty() ? 1.0 : rules.get(0).getPriceMultiplier();
-        double finalPrice = event.getBasePrice() * multiplier;
+        SeatInventoryRecord inventory = inventoryRepo.findByEventId(eventId)
+                .orElseThrow(() -> new RuntimeException("Seat inventory not found"));
+
+        double price = event.getBasePrice();
+        long daysLeft = ChronoUnit.DAYS.between(
+                java.time.LocalDate.now(), event.getEventDate());
+
+        List<PricingRule> applicableRules = ruleRepo.findByActiveTrue().stream()
+                .filter(r ->
+                        inventory.getRemainingSeats() >= r.getMinRemainingSeats()
+                                && inventory.getRemainingSeats() <= r.getMaxRemainingSeats()
+                                && daysLeft <= r.getDaysBeforeEvent()
+                ).collect(Collectors.toList());
+
+        String appliedRules = "";
+        for (PricingRule r : applicableRules) {
+            price *= r.getPriceMultiplier();
+            appliedRules += r.getRuleCode() + ",";
+        }
 
         DynamicPriceRecord record = new DynamicPriceRecord();
-        record.setEvent(event);
-        record.setComputedPrice(finalPrice);
-        record.setAppliedRuleCodes(
-                rules.isEmpty() ? "NONE" : rules.get(0).getRuleCode()
-        );
+        record.setEventId(eventId);
+        record.setComputedPrice(price);
+        record.setAppliedRuleCodes(appliedRules.isEmpty() ? null : appliedRules);
+        record.prePersist();
+
+        Optional<DynamicPriceRecord> previous =
+                priceRepo.findFirstByEventIdOrderByComputedAtDesc(eventId);
+
+        if (previous.isPresent() &&
+                !previous.get().getComputedPrice().equals(price)) {
+            PriceAdjustmentLog log = new PriceAdjustmentLog();
+            log.setEventId(eventId);
+            log.setOldPrice(previous.get().getComputedPrice());
+            log.setNewPrice(price);
+            log.prePersist();
+            logRepo.save(log);
+        }
 
         return priceRepo.save(record);
     }
