@@ -13,18 +13,15 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    private final String jwtSecret = "yourSecretKey"; // Replace with your secure secret
-    private final long jwtExpirationInMs = 86400000;  // 1 day
-    private final boolean enableClaims = true;        // Enable extra claims if needed
+    private final String jwtSecret = "yourSecretKey";  // Replace with a secure key
+    private final long jwtExpirationInMs = 86400000;   // 1 day
 
-    // Generate JWT with optional claims
+    // Generate JWT token
     public String generateToken(Authentication authentication, Long userId, String role) {
         Map<String, Object> claims = new HashMap<>();
-        if (enableClaims) {
-            claims.put("userId", userId);
-            claims.put("role", role);
-            claims.put("email", authentication.getName());
-        }
+        claims.put("userId", userId);
+        claims.put("role", role);
+        claims.put("email", authentication.getName());
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -38,16 +35,16 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // Extract username/email from token
+    // Extract email from token
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
-        return (String) claims.get("email");
+        return claims.get("email", String.class);
     }
 
-    // Get all claims as a Map
+    // Get all claims
     public Map<String, Object> getAllClaims(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
@@ -61,7 +58,7 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return false;
         }
     }
