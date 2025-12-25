@@ -4,62 +4,84 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "dynamic_price_records")
-public class DynamicPriceRecord {
+@Table(name = "seat_inventory")
+public class SeatInventoryRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private EventRecord event;
+    @Column(name = "event_id", nullable = false)
+    private Long eventId;
 
-    @Column(name = "computed_price", nullable = false)
-    private Double computedPrice;
+    @Column(name = "seat_number")
+    private String seatNumber;
 
-    @Column(name = "applied_rule_codes")
-    private String appliedRuleCodes; // comma-separated codes
+    @Column(name = "available")
+    private Boolean available = true;
 
-    @Column(name = "computed_at")
-    private LocalDateTime computedAt;
+    @Column(name = "remaining_seats")
+    private Integer remainingSeats;
 
-    public DynamicPriceRecord() {}
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    public DynamicPriceRecord(EventRecord event,
-                              Double computedPrice,
-                              String appliedRuleCodes) {
-        this.event = event;
-        this.computedPrice = computedPrice;
-        this.appliedRuleCodes = appliedRuleCodes;
-    }
+    public SeatInventoryRecord() {}
 
     @PrePersist
-    public void prePersist() {
-        if (computedAt == null) {
-            computedAt = LocalDateTime.now();
+    @PreUpdate
+    public void updateTimestamp() {
+        this.updatedAt = LocalDateTime.now();
+        if (available == null) {
+            available = true;
         }
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public EventRecord getEvent() { return event; }
-    public void setEvent(EventRecord event) { this.event = event; }
-
-    public Double getComputedPrice() { return computedPrice; }
-    public void setComputedPrice(Double computedPrice) {
-        this.computedPrice = computedPrice;
+    public Long getId() {
+        return id;
     }
 
-    public String getAppliedRuleCodes() { return appliedRuleCodes; }
-    public void setAppliedRuleCodes(String appliedRuleCodes) {
-        this.appliedRuleCodes = appliedRuleCodes;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public LocalDateTime getComputedAt() { return computedAt; }
-    public void setComputedAt(LocalDateTime computedAt) {
-        this.computedAt = computedAt;
+    public Long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
+    }
+
+    public String getSeatNumber() {
+        return seatNumber;
+    }
+
+    public void setSeatNumber(String seatNumber) {
+        this.seatNumber = seatNumber;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+
+    public Integer getRemainingSeats() {
+        return remainingSeats;
+    }
+
+    public void setRemainingSeats(Integer remainingSeats) {
+        this.remainingSeats = remainingSeats;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
