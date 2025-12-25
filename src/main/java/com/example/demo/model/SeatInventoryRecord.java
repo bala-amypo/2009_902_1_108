@@ -16,6 +16,9 @@ public class SeatInventoryRecord {
     private Boolean available;
     private LocalDateTime bookedAt;
 
+    // Add this field
+    private Integer remainingSeats;
+
     public SeatInventoryRecord() {
         this.available = true;
     }
@@ -35,6 +38,9 @@ public class SeatInventoryRecord {
 
     public LocalDateTime getBookedAt() { return bookedAt; }
     public void setBookedAt(LocalDateTime bookedAt) { this.bookedAt = bookedAt; }
+
+    public Integer getRemainingSeats() { return remainingSeats; }
+    public void setRemainingSeats(Integer remainingSeats) { this.remainingSeats = remainingSeats; }
 
     @PrePersist
     public void prePersist() {
