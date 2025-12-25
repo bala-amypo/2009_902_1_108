@@ -1,7 +1,14 @@
-public interface PricingRuleRepository
-        extends JpaRepository<PricingRule, Long> {
+package com.example.demo.repository;
 
-    PricingRule findByRuleCode(String ruleCode);
+import com.example.demo.model.PricingRule;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface PricingRuleRepository extends JpaRepository<PricingRule, Long> {
+
+    Optional<PricingRule> findByRuleCode(String ruleCode);
 
     List<PricingRule> findByActiveTrue();
 }
