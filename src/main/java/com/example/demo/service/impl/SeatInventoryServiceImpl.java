@@ -4,6 +4,7 @@ import com.example.demo.model.SeatInventoryRecord;
 import com.example.demo.repository.SeatInventoryRecordRepository;
 import com.example.demo.service.SeatInventoryService;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -16,20 +17,21 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
     }
 
     @Override
-    public SeatInventoryRecord updateRemainingSeats(Long id, Integer seats) {
-        SeatInventoryRecord record = seatRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Seat record not found"));
-        record.setRemainingSeats(seats);
-        return seatRepo.save(record);
+    public SeatInventoryRecord getInventoryByEvent(Long eventId) {
+        return seatRepo.findByEventId(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+    }
+
+    @Override
+    public SeatInventoryRecord updateRemainingSeats(Long eventId, Integer remainingSeats) {
+        SeatInventoryRecord seat = seatRepo.findByEventId(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+        seat.setRemainingSeats(remainingSeats);
+        return seatRepo.save(seat);
     }
 
     @Override
     public List<SeatInventoryRecord> getAllInventories() {
         return seatRepo.findAll();
-    }
-
-    @Override
-    public List<SeatInventoryRecord> getSeatsByEventId(Long eventId) {
-        return seatRepo.findByEventId(eventId);
     }
 }
