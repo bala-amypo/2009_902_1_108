@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PricingRuleRepository extends JpaRepository<PricingRule, Long> {
-
-    Optional<PricingRule> findByRuleCode(String ruleCode); // for fetching specific rule
-    List<PricingRule> findByActiveTrue(); // active rules only
-    boolean existsByRuleCode(String ruleCode); // check if rule exists
+    Optional<PricingRule> findByRuleCode(String ruleCode);
+    List<PricingRule> findByActiveTrue();
 }

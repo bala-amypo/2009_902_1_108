@@ -18,9 +18,7 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
     @Override
     public SeatInventoryRecord getInventoryByEvent(Long eventId) {
-        return seatRepo.findByEventId(eventId)
-                .stream()
-                .findFirst()
+        return seatRepo.findFirstByEventId(eventId)
                 .orElseThrow(() -> new RuntimeException("Inventory not found for event: " + eventId));
     }
 

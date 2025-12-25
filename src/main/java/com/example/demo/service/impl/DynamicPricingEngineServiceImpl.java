@@ -28,17 +28,15 @@ public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineServ
 
     @Override
     public DynamicPriceRecord computeDynamicPrice(Long eventId) {
-        SeatInventoryRecord seat = seatRepo.findByEventId(eventId)
-                .stream()
-                .findFirst()
+        SeatInventoryRecord seat = seatRepo.findFirstByEventId(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
 
         List<PricingRule> rules = ruleRepo.findByActiveTrue();
         double discount = rules.isEmpty() ? 0 : rules.get(0).getDiscount();
 
         DynamicPriceRecord record = new DynamicPriceRecord();
-        record.setEvent(seat.getEvent());
-        record.setComputedPrice(seat.getBasePrice() - discount);
+        record.setEvent(seat.getEvent()); // SeatInventoryRecord must have getEvent()
+        record.setComputedPrice(seat.getBasePrice() - discount); // SeatInventoryRecord must have getBasePrice()
         record.setAppliedRuleCodes(rules.isEmpty() ? "" : rules.get(0).getRuleCode());
 
         return priceRepo.save(record);
