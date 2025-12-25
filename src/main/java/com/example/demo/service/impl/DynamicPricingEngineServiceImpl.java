@@ -30,14 +30,12 @@ public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineServ
     public DynamicPriceRecord computeDynamicPrice(Long eventId) {
 
         EventRecord event = eventRepo.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+                .orElseThrow(() ->
+                        new RuntimeException("Event not found: " + eventId));
 
         List<PricingRule> rules = ruleRepo.findByActiveTrue();
 
-        double multiplier = rules.isEmpty()
-                ? 1.0
-                : rules.get(0).getPriceMultiplier();
-
+        double multiplier = rules.isEmpty() ? 1.0 : rules.get(0).getPriceMultiplier();
         double finalPrice = event.getBasePrice() * multiplier;
 
         DynamicPriceRecord record = new DynamicPriceRecord();
