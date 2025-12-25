@@ -1,38 +1,43 @@
-package com.example.demo.controller;
+package com.example.demo.model;
 
-import com.example.demo.model.SeatInventoryRecord;
-import com.example.demo.service.SeatInventoryService;
-import org.springframework.web.bind.annotation.*;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-import java.util.List;
+@Entity
+@Table(name = "seat_inventory")
+public class SeatInventoryRecord {
 
-@RestController
-@RequestMapping("/api/inventory")
-public class SeatInventoryController {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private final SeatInventoryService inventoryService;
+    private Long eventId;
+    private String seatNumber;
+    private Boolean available;
+    private LocalDateTime bookedAt;
 
-    public SeatInventoryController(SeatInventoryService inventoryService) {
-        this.inventoryService = inventoryService;
+    public SeatInventoryRecord() {
+        this.available = true;
     }
 
-    @PostMapping("/create")
-    public SeatInventoryRecord createInventory(@RequestBody SeatInventoryRecord inv) {
-        return inventoryService.createInventory(inv);
-    }
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    @GetMapping("/event/{eventId}")
-    public SeatInventoryRecord getInventory(@PathVariable Long eventId) {
-        return inventoryService.getInventoryByEvent(eventId);
-    }
+    public Long getEventId() { return eventId; }
+    public void setEventId(Long eventId) { this.eventId = eventId; }
 
-    @PutMapping("/update/{eventId}")
-    public SeatInventoryRecord updateRemainingSeats(@PathVariable Long eventId, @RequestParam Integer remainingSeats) {
-        return inventoryService.updateRemainingSeats(eventId, remainingSeats); // fixed
-    }
+    public String getSeatNumber() { return seatNumber; }
+    public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
 
-    @GetMapping("/all")
-    public List<SeatInventoryRecord> getAllInventories() {
-        return inventoryService.getAllInventories(); // fixed
+    public Boolean getAvailable() { return available; }
+    public void setAvailable(Boolean available) { this.available = available; }
+
+    public LocalDateTime getBookedAt() { return bookedAt; }
+    public void setBookedAt(LocalDateTime bookedAt) { this.bookedAt = bookedAt; }
+
+    @PrePersist
+    public void prePersist() {
+        if (available == null) available = true;
     }
 }
