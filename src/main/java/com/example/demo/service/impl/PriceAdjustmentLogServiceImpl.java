@@ -15,6 +15,16 @@ public class PriceAdjustmentLogServiceImpl implements PriceAdjustmentLogService 
     }
 
     @Override
+    public PriceAdjustmentLog logAdjustment(PriceAdjustmentLog log) {
+        return repo.save(log);
+    }
+
+    @Override
+    public List<PriceAdjustmentLog> getAllAdjustments() {
+        return repo.findAll();
+    }
+
+    @Override
     public List<PriceAdjustmentLog> getAdjustmentsByEvent(Long eventId) {
         return repo.findByEventId(eventId);
     }

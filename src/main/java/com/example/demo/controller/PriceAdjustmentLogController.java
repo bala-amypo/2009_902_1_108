@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/price-adjustments")
+@RequestMapping("/api/logs")
 public class PriceAdjustmentLogController {
 
     private final PriceAdjustmentLogService logService;
@@ -16,21 +16,18 @@ public class PriceAdjustmentLogController {
         this.logService = logService;
     }
 
-    // Log adjustment manually
-    @PostMapping
+    @PostMapping("/log")
     public PriceAdjustmentLog logAdjustment(@RequestBody PriceAdjustmentLog log) {
-        return logService.logAdjustment(log);
+        return logService.logAdjustment(log); // fixed
     }
 
-    // Get adjustments by event
+    @GetMapping("/all")
+    public List<PriceAdjustmentLog> getAllAdjustments() {
+        return logService.getAllAdjustments(); // fixed
+    }
+
     @GetMapping("/event/{eventId}")
     public List<PriceAdjustmentLog> getAdjustmentsByEvent(@PathVariable Long eventId) {
         return logService.getAdjustmentsByEvent(eventId);
-    }
-
-    // Get all adjustments
-    @GetMapping
-    public List<PriceAdjustmentLog> getAllAdjustments() {
-        return logService.getAllAdjustments();
     }
 }

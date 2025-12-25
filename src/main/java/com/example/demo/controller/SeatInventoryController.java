@@ -16,29 +16,23 @@ public class SeatInventoryController {
         this.inventoryService = inventoryService;
     }
 
-    // Create inventory
-    @PostMapping
-    public SeatInventoryRecord createInventory(@RequestBody SeatInventoryRecord inventory) {
-        return inventoryService.createInventory(inventory);
+    @PostMapping("/create")
+    public SeatInventoryRecord createInventory(@RequestBody SeatInventoryRecord inv) {
+        return inventoryService.createInventory(inv);
     }
 
-    // Update remaining seats
-    @PutMapping("/{eventId}/remaining")
-    public SeatInventoryRecord updateRemainingSeats(@PathVariable Long eventId,
-                                                    @RequestParam Integer remainingSeats) {
-        return inventoryService.updateRemainingSeats(eventId, remainingSeats);
-    }
-
-    // Get inventory by event
     @GetMapping("/event/{eventId}")
-    public SeatInventoryRecord getInventoryByEvent(@PathVariable Long eventId) {
-        return inventoryService.getInventoryByEvent(eventId)
-                .orElseThrow(() -> new RuntimeException("Inventory not found for event " + eventId));
+    public SeatInventoryRecord getInventory(@PathVariable Long eventId) {
+        return inventoryService.getInventoryByEvent(eventId);
     }
 
-    // Get all inventories
-    @GetMapping
+    @PutMapping("/update/{eventId}")
+    public SeatInventoryRecord updateRemainingSeats(@PathVariable Long eventId, @RequestParam Integer remainingSeats) {
+        return inventoryService.updateRemainingSeats(eventId, remainingSeats); // fixed
+    }
+
+    @GetMapping("/all")
     public List<SeatInventoryRecord> getAllInventories() {
-        return inventoryService.getAllInventories();
+        return inventoryService.getAllInventories(); // fixed
     }
 }

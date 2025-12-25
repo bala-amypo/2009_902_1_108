@@ -9,30 +9,39 @@ import java.util.List;
 
 public class PricingRuleServiceImpl implements PricingRuleService {
 
-    private final PricingRuleRepository repository;
+    private final PricingRuleRepository repo;
 
-    public PricingRuleServiceImpl(PricingRuleRepository repository) {
-        this.repository = repository;
+    public PricingRuleServiceImpl(PricingRuleRepository repo) {
+        this.repo = repo;
     }
 
     @Override
     public PricingRule createRule(PricingRule rule) {
-        if (repository.existsByRuleCode(rule.getRuleCode())) {
-            throw new BadRequestException("Rule code already exists");
-        }
-        if (rule.getPriceMultiplier() <= 0) {
-            throw new BadRequestException("Price multiplier must be > 0");
-        }
-        return repository.save(rule);
+        if (rule.getPriceMultiplier() <= 0) throw new BadRequestException("Price multiplier must be > 0");
+        if (repo.existsByRuleCode(rule.getRuleCode())) throw new BadRequestException("Rule code exists");
+        return repo.save(rule);
     }
 
     @Override
     public List<PricingRule> getAllRules() {
-        return repository.findAll();
+        return repo.findAll();
     }
 
     @Override
     public List<PricingRule> getActiveRules() {
-        return repository.findByActiveTrue();
+        return repo.findByActiveTrue();
+    }
+
+    @Override
+    public PricingRule updateRule(Long id, PricingRule rule) {
+        PricingRule existing = repo.findById(id).orElseThrow(() -> new RuntimeException("Rule not found"));
+        existing.setPriceMultiplier(rule.getPriceMultiplier());
+        existing.setActive(rule.getActive());
+        return repo.save(existing);
+    }
+
+    @Override
+    public PricingRule getRuleByCode(String code) {
+        return repo.findByRuleCode(code).orElseThrow(() -> new RuntimeException("Rule not found"));
     }
 }
