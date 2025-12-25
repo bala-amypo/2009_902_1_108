@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PricingRuleRepository extends JpaRepository<PricingRule, Long> {
-    boolean existsByRuleCode(String ruleCode);
-    PricingRule findByRuleCode(String ruleCode);
+
+    // Return a list instead of Optional
+    List<PricingRule> findByRuleCode(String code);
+
     List<PricingRule> findByActiveTrue();
 }

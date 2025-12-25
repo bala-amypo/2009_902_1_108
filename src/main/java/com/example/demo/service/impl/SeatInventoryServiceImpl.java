@@ -18,11 +18,11 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
     @Override
     public SeatInventoryRecord getInventoryByEvent(Long eventId) {
-        List<SeatInventoryRecord> seats = seatRepo.findByEventIdList(eventId);
+        List<SeatInventoryRecord> seats = seatRepo.findByEventId(eventId);
         if (seats.isEmpty()) {
             throw new RuntimeException("Event not found: " + eventId);
         }
-        return seats.get(0); // return first match
+        return seats.get(0);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
 
     @Override
     public SeatInventoryRecord updateRemainingSeats(Long eventId, Integer remainingSeats) {
-        List<SeatInventoryRecord> seats = seatRepo.findByEventIdList(eventId);
+        List<SeatInventoryRecord> seats = seatRepo.findByEventId(eventId);
         if (seats.isEmpty()) {
             throw new RuntimeException("Event not found: " + eventId);
         }

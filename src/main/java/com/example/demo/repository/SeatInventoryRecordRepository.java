@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SeatInventoryRecordRepository extends JpaRepository<SeatInventoryRecord, Long> {
+
+    // Return a list instead of Optional
     List<SeatInventoryRecord> findByEventId(Long eventId);
 }

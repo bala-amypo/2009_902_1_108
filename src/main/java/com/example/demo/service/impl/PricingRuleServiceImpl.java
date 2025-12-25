@@ -33,11 +33,11 @@ public class PricingRuleServiceImpl implements PricingRuleService {
 
     @Override
     public PricingRule getRuleByCode(String code) {
-        List<PricingRule> rules = repo.findByRuleCodeList(code);
+        List<PricingRule> rules = repo.findByRuleCode(code);
         if (rules.isEmpty()) {
             throw new RuntimeException("Rule not found: " + code);
         }
-        return rules.get(0); // return the first match
+        return rules.get(0);
     }
 
     @Override
