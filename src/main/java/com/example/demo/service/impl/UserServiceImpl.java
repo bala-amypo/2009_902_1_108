@@ -6,7 +6,6 @@ import com.example.demo.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,9 +18,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        if (repo.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists: " + user.getUsername());
-        }
         if (repo.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists: " + user.getEmail());
         }
@@ -44,9 +40,12 @@ public class UserServiceImpl implements UserService {
         User existing = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found: " + id));
 
-        existing.setUsername(user.getUsername());
+        existing.setFirstName(user.getFirstName());
+        existing.setLastName(user.getLastName());
         existing.setEmail(user.getEmail());
         existing.setPassword(user.getPassword());
+        existing.setRoles(user.getRoles());
+
         return repo.save(existing);
     }
 
@@ -59,13 +58,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUsername(String username) {
-        return repo.findByUsername(username)
+        // Since your entity does not have username, we can map it to email
+        return repo.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return repo.findByEmail(email);
+    public User findByEmail(String email) {
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
     }
 
     @Override
