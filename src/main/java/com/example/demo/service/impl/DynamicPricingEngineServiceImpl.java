@@ -1,6 +1,10 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.DynamicPriceRecord;
+import com.example.demo.model.SeatInventoryRecord;
+import com.example.demo.model.PricingRule;
+import com.example.demo.repository.SeatInventoryRecordRepository;
+import com.example.demo.repository.PricingRuleRepository;
 import com.example.demo.service.DynamicPricingEngineService;
 import org.springframework.stereotype.Service;
 
@@ -10,22 +14,41 @@ import java.util.List;
 @Service
 public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineService {
 
+    private final SeatInventoryRecordRepository seatRepo;
+    private final PricingRuleRepository ruleRepo;
+
+    public DynamicPricingEngineServiceImpl(SeatInventoryRecordRepository seatRepo,
+                                           PricingRuleRepository ruleRepo) {
+        this.seatRepo = seatRepo;
+        this.ruleRepo = ruleRepo;
+    }
+
     @Override
     public DynamicPriceRecord computeDynamicPrice(Long eventId) {
-        // Dummy computation without referencing missing entities
+        SeatInventoryRecord seat = seatRepo.findByEventId(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+
+        List<PricingRule> rules = ruleRepo.findByActiveTrue();
+        double discount = 0;
+        if (!rules.isEmpty()) {
+            discount = rules.get(0).getDiscount();
+        }
+
         DynamicPriceRecord record = new DynamicPriceRecord();
         record.setEventId(eventId);
-        record.setPrice(100.0); // default price for now
+        record.setPrice(seat.getBasePrice() - discount);
         return record;
     }
 
     @Override
     public List<DynamicPriceRecord> getPriceHistory(Long eventId) {
+        // Return dummy list for now, implement proper history retrieval
         return new ArrayList<>();
     }
 
     @Override
     public List<DynamicPriceRecord> getAllComputedPrices() {
+        // Return dummy list for now, implement proper retrieval
         return new ArrayList<>();
     }
 }
