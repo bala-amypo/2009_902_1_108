@@ -1,52 +1,51 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.EventRecord;
 import com.example.demo.repository.EventRecordRepository;
 import com.example.demo.service.EventRecordService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class EventRecordServiceImpl implements EventRecordService {
 
-    private final EventRecordRepository repository;
+    private final EventRecordRepository repo;
 
-    public EventRecordServiceImpl(EventRecordRepository repository) {
-        this.repository = repository;
+    public EventRecordServiceImpl(EventRecordRepository repo) {
+        this.repo = repo;
     }
 
     @Override
     public EventRecord createEvent(EventRecord event) {
-        if (repository.existsByEventCode(event.getEventCode())) {
-            throw new BadRequestException("Event code already exists");
-        }
-        if (event.getBasePrice() == null || event.getBasePrice() <= 0) {
-            throw new BadRequestException("Base price must be > 0");
-        }
-        event.prePersist();
-        return repository.save(event);
+        return repo.save(event);
     }
 
     @Override
     public EventRecord getEventById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
-    }
-
-    @Override
-    public Optional<EventRecord> getEventByCode(String code) {
-        return repository.findByEventCode(code);
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + id));
     }
 
     @Override
     public List<EventRecord> getAllEvents() {
-        return repository.findAll();
+        return repo.findAll();
     }
 
     @Override
-    public EventRecord updateEventStatus(Long id, boolean active) {
-        EventRecord event = getEventById(id);
-        event.setActive(active);
-        return repository.save(event);
+    public EventRecord updateEvent(Long id, EventRecord event) {
+        EventRecord existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + id));
+        existing.setName(event.getName());
+        existing.setDate(event.getDate());
+        existing.setLocation(event.getLocation());
+        return repo.save(existing);
+    }
+
+    @Override
+    public void deleteEvent(Long id) {
+        EventRecord existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + id));
+        repo.delete(existing);
     }
 }

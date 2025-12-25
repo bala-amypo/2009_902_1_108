@@ -16,13 +16,13 @@ public class EventRecordController {
         this.eventService = eventService;
     }
 
-    // Create event
+    // Create a new event
     @PostMapping
     public EventRecord createEvent(@RequestBody EventRecord event) {
         return eventService.createEvent(event);
     }
 
-    // Get event by ID
+    // Get an event by its ID
     @GetMapping("/{id}")
     public EventRecord getEventById(@PathVariable Long id) {
         return eventService.getEventById(id);
@@ -34,13 +34,13 @@ public class EventRecordController {
         return eventService.getAllEvents();
     }
 
-    // Update event status
+    // Update the active status of an event
     @PutMapping("/{id}/status")
     public EventRecord updateEventStatus(@PathVariable Long id, @RequestParam boolean active) {
         return eventService.updateEventStatus(id, active);
     }
 
-    // Lookup by event code
+    // Lookup an event by its code
     @GetMapping("/lookup/{eventCode}")
     public EventRecord getEventByCode(@PathVariable String eventCode) {
         return eventService.getEventByCode(eventCode)
