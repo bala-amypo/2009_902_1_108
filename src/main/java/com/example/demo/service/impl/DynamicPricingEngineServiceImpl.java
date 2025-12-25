@@ -8,6 +8,7 @@ import com.example.demo.repository.PricingRuleRepository;
 import com.example.demo.service.DynamicPricingEngineService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,21 +24,31 @@ public class DynamicPricingEngineServiceImpl implements DynamicPricingEngineServ
     }
 
     @Override
-    public DynamicPriceRecord getLatestPrice(Long eventId) {
+    public DynamicPriceRecord computeDynamicPrice(Long eventId) {
         SeatInventoryRecord seat = seatRepo.findByEventId(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+
         List<PricingRule> rules = ruleRepo.findByActiveTrue();
-
-        double basePrice = seat.getBasePrice();
         double discount = 0;
-
         if (!rules.isEmpty()) {
             discount = rules.get(0).getDiscount();
         }
 
         DynamicPriceRecord record = new DynamicPriceRecord();
         record.setEventId(eventId);
-        record.setPrice(basePrice - discount);
+        record.setPrice(seat.getBasePrice() - discount);
         return record;
+    }
+
+    @Override
+    public List<DynamicPriceRecord> getPriceHistory(Long eventId) {
+        // Return dummy list for now, implement proper history retrieval
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<DynamicPriceRecord> getAllComputedPrices() {
+        // Return dummy list for now, implement proper retrieval
+        return new ArrayList<>();
     }
 }
