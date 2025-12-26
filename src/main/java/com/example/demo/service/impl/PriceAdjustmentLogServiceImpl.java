@@ -7,15 +7,15 @@ import com.example.demo.service.PriceAdjustmentLogService;
 import java.util.List;
 
 public class PriceAdjustmentLogServiceImpl implements PriceAdjustmentLogService {
-
-    private final PriceAdjustmentLogRepository repository;
-
-    public PriceAdjustmentLogServiceImpl(PriceAdjustmentLogRepository repository) {
-        this.repository = repository;
+    
+    private final PriceAdjustmentLogRepository priceAdjustmentLogRepository;
+    
+    public PriceAdjustmentLogServiceImpl(PriceAdjustmentLogRepository priceAdjustmentLogRepository) {
+        this.priceAdjustmentLogRepository = priceAdjustmentLogRepository;
     }
-
+    
     @Override
     public List<PriceAdjustmentLog> getAdjustmentsByEvent(Long eventId) {
-        return repository.findByEventId(eventId);
+        return priceAdjustmentLogRepository.findByEventId(eventId);
     }
 }

@@ -8,31 +8,33 @@ import com.example.demo.service.PricingRuleService;
 import java.util.List;
 
 public class PricingRuleServiceImpl implements PricingRuleService {
-
-    private final PricingRuleRepository repository;
-
-    public PricingRuleServiceImpl(PricingRuleRepository repository) {
-        this.repository = repository;
+    
+    private final PricingRuleRepository pricingRuleRepository;
+    
+    public PricingRuleServiceImpl(PricingRuleRepository pricingRuleRepository) {
+        this.pricingRuleRepository = pricingRuleRepository;
     }
-
+    
     @Override
     public PricingRule createRule(PricingRule rule) {
-        if (rule.getPriceMultiplier() <= 0) {
+        if (rule.getPriceMultiplier() == null || rule.getPriceMultiplier() <= 0) {
             throw new BadRequestException("Price multiplier must be > 0");
         }
-        if (repository.existsByRuleCode(rule.getRuleCode())) {
+        
+        if (pricingRuleRepository.existsByRuleCode(rule.getRuleCode())) {
             throw new BadRequestException("Rule code already exists");
         }
-        return repository.save(rule);
+        
+        return pricingRuleRepository.save(rule);
     }
-
+    
     @Override
     public List<PricingRule> getAllRules() {
-        return repository.findAll();
+        return pricingRuleRepository.findAll();
     }
-
+    
     @Override
     public List<PricingRule> getActiveRules() {
-        return repository.findByActiveTrue();
+        return pricingRuleRepository.findByActiveTrue();
     }
 }
