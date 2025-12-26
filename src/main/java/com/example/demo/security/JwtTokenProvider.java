@@ -3,37 +3,69 @@ package com.example.demo.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.Authentication;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class JwtTokenProvider {
-
-    @Value("${jwt.secret}") // Inject from properties
-    private String jwtSecret;
-
-    @Value("${jwt.expiration}")
-    private long jwtExpirationMs;
-
-    // Generate token
-    public String generateToken(String username) {
+    
+    private final SecretKey secretKey;
+    private final long validityInMilliseconds;
+    
+    public JwtTokenProvider(String secret, long validityInMilliseconds, boolean enabled) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
+    
+    public String generateToken(Authentication authentication, Long userId, String role) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("role", role);
+        claims.put("email", authentication.getName());
+        
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .setClaims(claims)
+                .setSubject(authentication.getName())
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
-
-    // Validate and parse token
+    
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+    
+    public Map<String, Object> getAllClaims(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return new HashMap<>(claims);
+    }
+    
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
