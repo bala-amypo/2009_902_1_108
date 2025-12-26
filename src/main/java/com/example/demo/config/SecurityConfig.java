@@ -10,10 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class SecurityConfig {
 
     @Bean
-    public JwtTokenProvider jwtTokenProvider() {
-        return new JwtTokenProvider(
-                "0123456789ABCDEF0123456789ABCDEF", // 32 bytes
-                3600000L
-        );
-    }
+public JwtTokenProvider jwtTokenProvider() {
+    return new JwtTokenProvider(
+            "0123456789ABCDEF0123456789ABCDEF",
+            3600000L
+    );
+}
 }
