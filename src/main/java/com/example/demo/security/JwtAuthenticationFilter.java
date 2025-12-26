@@ -35,7 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
-                // Token validation failed, continue without authentication
             }
         }
         

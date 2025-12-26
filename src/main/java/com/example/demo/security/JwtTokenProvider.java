@@ -57,7 +57,6 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token);
     }
 
-    // Additional methods for backward compatibility with tests
     public String getUsernameFromToken(String token) {
         return validateAndGetClaims(token).getBody().getSubject();
     }

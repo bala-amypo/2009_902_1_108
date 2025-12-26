@@ -27,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user;
     }
     
-    // For test compatibility
     public Map<String, Object> registerUser(String name, String email, String encodedPassword, String role) {
         return createUser(name, email, encodedPassword, role);
     }

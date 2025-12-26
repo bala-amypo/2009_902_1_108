@@ -28,7 +28,6 @@ public class AuthController {
         
         User user;
         if (result instanceof Map) {
-            // Handle Map<String, Object> case
             @SuppressWarnings("unchecked")
             Map<String, Object> userMap = (Map<String, Object>) result;
             user = new User();
@@ -38,7 +37,6 @@ public class AuthController {
             user.setPassword((String) userMap.get("password"));
             user.setRole((String) userMap.get("role"));
         } else {
-            // Handle User object case
             user = (User) result;
         }
         
