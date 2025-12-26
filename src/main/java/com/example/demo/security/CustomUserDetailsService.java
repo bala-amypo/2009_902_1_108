@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final Map<String, Map<String, Object>> users = new HashMap<>();
     private final AtomicLong userIdCounter = new AtomicLong(1);
     
-    public Map<String, Object> registerUser(String name, String email, String encodedPassword, String role) {
+    public Map<String, Object> createUser(String name, String email, String encodedPassword, String role) {
         Map<String, Object> user = new HashMap<>();
         user.put("userId", userIdCounter.getAndIncrement());
         user.put("name", name);
