@@ -1,10 +1,8 @@
 package com.example.demo.service;
 
-import java.util.Map;
+import com.example.demo.model.User;
 
 public interface UserService {
-
-    Long register(String name, String email, String password, String role);
-
-    Map<String, Object> authenticateUser(String email, String password);
+    User registerUser(String name, String email, String password, String role);
+    Object authenticateUser(String email, String password);
 }
