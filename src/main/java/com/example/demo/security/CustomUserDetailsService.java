@@ -27,6 +27,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user;
     }
     
+    // For test compatibility
+    public Map<String, Object> registerUser(String name, String email, String encodedPassword, String role) {
+        return createUser(name, email, encodedPassword, role);
+    }
+    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Map<String, Object> user = users.get(username);
