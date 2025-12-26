@@ -27,23 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return user;
     }
     
-    public com.example.demo.model.User authenticateUser(String email, String password) {
-        Map<String, Object> userMap = users.get(email);
-        if (userMap == null) {
-            throw new RuntimeException("Invalid credentials");
-        }
-        
-        // Convert Map to User object for compatibility
-        com.example.demo.model.User user = new com.example.demo.model.User();
-        user.setId((Long) userMap.get("userId"));
-        user.setName((String) userMap.get("name"));
-        user.setEmail((String) userMap.get("email"));
-        user.setPassword((String) userMap.get("password"));
-        user.setRole((String) userMap.get("role"));
-        
-        return user;
-    }
-    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Map<String, Object> user = users.get(username);
