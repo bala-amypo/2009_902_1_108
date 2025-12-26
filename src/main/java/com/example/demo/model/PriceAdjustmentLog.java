@@ -3,15 +3,19 @@ package com.example.demo.model;
 import java.time.LocalDateTime;
 
 public class PriceAdjustmentLog {
-
+    private Long id;
     private Long eventId;
     private Double oldPrice;
     private Double newPrice;
     private LocalDateTime changedAt;
 
     public void prePersist() {
-        this.changedAt = LocalDateTime.now();
+        changedAt = LocalDateTime.now();
     }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public Long getEventId() { return eventId; }
     public void setEventId(Long eventId) { this.eventId = eventId; }
@@ -23,4 +27,5 @@ public class PriceAdjustmentLog {
     public void setNewPrice(Double newPrice) { this.newPrice = newPrice; }
 
     public LocalDateTime getChangedAt() { return changedAt; }
+    public void setChangedAt(LocalDateTime changedAt) { this.changedAt = changedAt; }
 }
