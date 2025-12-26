@@ -1,7 +1,5 @@
 package com.example.demo.config;
 
-import com.example.demo.repository.UserRepository;
-import com.example.demo.repository.impl.UserRepositoryImpl;
 import com.example.demo.security.CustomUserDetailsService;
 import com.example.demo.security.JwtAuthenticationFilter;
 import com.example.demo.security.JwtTokenProvider;
@@ -27,11 +25,6 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserRepository userRepository() {
-        return new UserRepositoryImpl();
     }
 
     @Bean
