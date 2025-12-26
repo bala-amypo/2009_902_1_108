@@ -8,6 +8,8 @@ import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -22,7 +24,23 @@ public class AuthController {
     
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@RequestBody AuthRequest request) {
-        User user = userService.authenticateUser(request.getEmail(), request.getPassword());
+        Object result = userService.authenticateUser(request.getEmail(), request.getPassword());
+        
+        User user;
+        if (result instanceof Map) {
+            // Handle Map<String, Object> case
+            @SuppressWarnings("unchecked")
+            Map<String, Object> userMap = (Map<String, Object>) result;
+            user = new User();
+            user.setId((Long) userMap.get("userId"));
+            user.setName((String) userMap.get("name"));
+            user.setEmail((String) userMap.get("email"));
+            user.setPassword((String) userMap.get("password"));
+            user.setRole((String) userMap.get("role"));
+        } else {
+            // Handle User object case
+            user = (User) result;
+        }
         
         String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole(), user.getId(), user.getEmail());
         
