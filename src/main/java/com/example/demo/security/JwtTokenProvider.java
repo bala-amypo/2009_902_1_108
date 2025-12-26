@@ -2,24 +2,23 @@ package com.example.demo.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+@Component   // ⭐ THIS IS IMPORTANT
 public class JwtTokenProvider {
 
-    private final String secret;
-    private final long jwtExpirationMs;
+    @Value("${jwt.secret:0123456789ABCDEF0123456789ABCDEF}")
+    private String secret;
 
-    public JwtTokenProvider(String secret, long jwtExpirationMs) {
-        this.secret = secret;
-        this.jwtExpirationMs = jwtExpirationMs;
-    }
+    @Value("${jwt.expiration:3600000}")
+    private long jwtExpirationMs;
 
-    /* =====================================================
-       1️⃣ USED BY TEST CASES
-       ===================================================== */
     public String generateToken(String username, String role, Long userId, String email) {
         return Jwts.builder()
                 .setSubject(username)
@@ -32,58 +31,34 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    /* =====================================================
-       2️⃣ USED BY AuthController
-       ===================================================== */
-    public String generateToken(Authentication authentication, Long userId, String email) {
-
-        Object principal = authentication.getPrincipal();
-        String username;
-        String role = "USER"; // default safe role
-
-        if (principal instanceof UserDetails userDetails) {
-            username = userDetails.getUsername();
-            if (!userDetails.getAuthorities().isEmpty()) {
-                role = userDetails.getAuthorities().iterator().next().getAuthority();
-            }
-        } else {
-            username = principal.toString();
-        }
-
-        return generateToken(username, role, userId, email);
+    // Overloaded method for backward compatibility with tests
+    public String generateToken(Authentication authentication, Long userId, String role) {
+        return generateToken(authentication.getName(), role, userId, authentication.getName());
     }
 
-    /* =====================================================
-       3️⃣ USED BY JwtAuthenticationFilter
-       ===================================================== */
+    public Jws<Claims> validateAndGetClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secret.getBytes())
+                .build()
+                .parseClaimsJws(token);
+    }
+
+    // Additional methods for backward compatibility with tests
+    public String getUsernameFromToken(String token) {
+        return validateAndGetClaims(token).getBody().getSubject();
+    }
+
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
-                    .build()
-                    .parseClaimsJws(token);
+            validateAndGetClaims(token);
             return true;
-        } catch (JwtException | IllegalArgumentException ex) {
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
-    }
-
-    /* =====================================================
-       4️⃣ USED INTERNALLY (OPTIONAL)
-       ===================================================== */
-    public Jws<Claims> validateAndGetClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseClaimsJws(token);
+    public Map<String, Object> getAllClaims(String token) {
+        Claims claims = validateAndGetClaims(token).getBody();
+        return new HashMap<>(claims);
     }
 }

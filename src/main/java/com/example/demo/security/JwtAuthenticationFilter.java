@@ -1,5 +1,7 @@
 package com.example.demo.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,15 +23,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
-                                  FilterChain filterChain) throws ServletException, IOException {
+                                FilterChain filterChain) throws ServletException, IOException {
         
         String token = getTokenFromRequest(request);
         
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsernameFromToken(token);
-            UsernamePasswordAuthenticationToken auth = 
-                new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        if (token != null) {
+            try {
+                Jws<Claims> claimsJws = jwtTokenProvider.validateAndGetClaims(token);
+                String username = claimsJws.getBody().getSubject();
+                UsernamePasswordAuthenticationToken auth = 
+                    new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (Exception e) {
+                // Token validation failed, continue without authentication
+            }
         }
         
         filterChain.doFilter(request, response);
