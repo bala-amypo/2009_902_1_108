@@ -5,13 +5,15 @@ import com.example.demo.model.SeatInventoryRecord;
 import com.example.demo.repository.EventRecordRepository;
 import com.example.demo.repository.SeatInventoryRecordRepository;
 import com.example.demo.service.SeatInventoryService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SeatInventoryServiceImpl implements SeatInventoryService {
     
     private final SeatInventoryRecordRepository seatInventoryRecordRepository;
     private final EventRecordRepository eventRecordRepository;
     
-    public SeatInventoryServiceImpl(SeatInventoryRecordRepository seatInventoryRecordRepository,
+    public SeatInventoryServiceImpl(SeatInventoryRecordRepository seatInventoryRecordRepository, 
                                    EventRecordRepository eventRecordRepository) {
         this.seatInventoryRecordRepository = seatInventoryRecordRepository;
         this.eventRecordRepository = eventRecordRepository;
@@ -19,14 +21,13 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
     
     @Override
     public SeatInventoryRecord createInventory(SeatInventoryRecord inventory) {
-        if (!eventRecordRepository.findById(inventory.getEventId()).isPresent()) {
-            throw new RuntimeException("Event not found");
-        }
+        // Validate event exists
+        eventRecordRepository.findById(inventory.getEventId())
+                .orElseThrow(() -> new BadRequestException("Event not found"));
         
         if (inventory.getRemainingSeats() > inventory.getTotalSeats()) {
             throw new BadRequestException("Remaining seats cannot exceed total seats");
         }
-        
         return seatInventoryRecordRepository.save(inventory);
     }
     
