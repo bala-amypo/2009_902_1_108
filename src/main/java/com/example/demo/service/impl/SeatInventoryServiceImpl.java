@@ -21,7 +21,6 @@ public class SeatInventoryServiceImpl implements SeatInventoryService {
     
     @Override
     public SeatInventoryRecord createInventory(SeatInventoryRecord inventory) {
-        // Validate event exists
         eventRecordRepository.findById(inventory.getEventId())
                 .orElseThrow(() -> new BadRequestException("Event not found"));
         
