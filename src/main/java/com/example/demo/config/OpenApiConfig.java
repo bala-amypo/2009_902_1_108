@@ -23,7 +23,7 @@ public class OpenApiConfig {
                         .description("API for tracking and estimating carbon emissions")
                         .version("1.0"))
                 .servers(List.of(
-                        new Server().url("https://9024.408procr.amypo.ai")
+                        new Server().url("https://9024.408procr.amypo.ai/")
                 ))
                 .addSecurityItem(new SecurityRequirement()
                         .addList("Bearer Authentication"))
