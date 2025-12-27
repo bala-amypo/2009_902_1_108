@@ -18,7 +18,7 @@ public class SwaggerConfig {
                         .version("1.0")
                         .description("API for managing dynamic event ticket pricing"))
                 .servers(List.of(
-                        new Server().url("https://9024.408procr.amypo.ai/").description("Production Server"),
+                        new Server().url("https://9024.408procr.amypo.ai/").description("Production
                         new Server().url("http://localhost:8080").description("Local Development")
                 ));
     }
