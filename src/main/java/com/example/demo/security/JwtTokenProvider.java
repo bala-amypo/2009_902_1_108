@@ -13,7 +13,7 @@ import java.util.Map;
 @Component   // ⭐ THIS IS IMPORTANT
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret:0123456789ABCDEF0123456789ABCDEF}")
+    @Value("${jwt.secret:VerySecretKeyForJwtDemoApplication123456789ABCDEF0123456789ABCDEF}")
     private String secret;
 
     @Value("${jwt.expiration:3600000}")
@@ -24,12 +24,12 @@ public class JwtTokenProvider {
 
     // Constructor for tests
     public JwtTokenProvider(String secret, long jwtExpirationMs, boolean unused) {
-        this.secret = secret != null ? secret : "0123456789ABCDEF0123456789ABCDEF";
+        this.secret = secret != null ? secret : "VerySecretKeyForJwtDemoApplication123456789ABCDEF0123456789ABCDEF";
         this.jwtExpirationMs = jwtExpirationMs > 0 ? jwtExpirationMs : 3600000L;
     }
 
     public String generateToken(String username, String role, Long userId, String email) {
-        String actualSecret = (secret != null && !secret.isEmpty()) ? secret : "0123456789ABCDEF0123456789ABCDEF";
+        String actualSecret = (secret != null && !secret.isEmpty()) ? secret : "VerySecretKeyForJwtDemoApplication123456789ABCDEF0123456789ABCDEF";
         long actualExpiration = (jwtExpirationMs > 0) ? jwtExpirationMs : 3600000L;
         
         return Jwts.builder()
@@ -49,7 +49,7 @@ public class JwtTokenProvider {
     }
 
     public Jws<Claims> validateAndGetClaims(String token) {
-        String actualSecret = (secret != null && !secret.isEmpty()) ? secret : "0123456789ABCDEF0123456789ABCDEF";
+        String actualSecret = (secret != null && !secret.isEmpty()) ? secret : "VerySecretKeyForJwtDemoApplication123456789ABCDEF0123456789ABCDEF";
         
         return Jwts.parserBuilder()
                 .setSigningKey(actualSecret.getBytes())
@@ -57,6 +57,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token);
     }
 
+    // Additional methods for backward compatibility with tests
     public String getUsernameFromToken(String token) {
         return validateAndGetClaims(token).getBody().getSubject();
     }
